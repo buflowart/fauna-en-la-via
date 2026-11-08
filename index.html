@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Fauna en la Vía</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cabecera tipo señal vial, mapa real (Leaflet + OpenStreetMap) a la izquierda, tramos y ficha a la derecha. */
+:root {
+  color-scheme: light;
+  --bg: #EAF0E6; --surface: #F7FAF5; --ink: #14241B; --muted: #566A5D; --line: #C9D7C9;
+  --accent: #F2B705; --accent-ink: #1A1500;
+  --g-mam: #C4492F; --g-rep: #3F8A45; --g-ave: #2F66B3; --g-anf: #8A52B8; --g-dom: #B07A1E; --g-inv: #2A8C93;
+  --font-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0E1913; --surface: #15231B; --ink: #E5EEE7; --muted: #94A99B; --line: #27402F;
+    --g-mam: #E0765C; --g-rep: #66B56C; --g-ave: #6A9BE0; --g-anf: #B58AE0; --g-dom: #D9A545; --g-inv: #5FC0C7;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 1160px; margin: 0 auto; }
+h1, h2 { font-family: var(--font-display); font-stretch: 75%; text-wrap: balance; margin: 0; line-height: 1.05; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, .row:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.sign { flex: none; width: 46px; height: 46px; transform: rotate(45deg); background: var(--accent); border: 3px solid #14241B; border-radius: 5px; display: grid; place-items: center; margin: 6px; }
+.sign span { transform: rotate(-45deg); font-family: var(--font-display); font-weight: 900; font-size: 24px; color: #14241B; }
+h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 900; letter-spacing: -0.01em; text-transform: uppercase; }
+.sub { color: var(--muted); font-size: 14px; max-width: 46ch; margin: 4px 0 0; }
+.tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); padding: 4px; border-radius: 10px; }
+.tab { background: none; border: 0; padding: 8px 14px; border-radius: 7px; cursor: pointer; font-weight: 600; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+.badge { font-family: var(--font-mono); font-size: 12px; background: var(--ink); color: var(--bg); border-radius: 99px; padding: 0 7px; }
+.tab[aria-selected="true"] .badge { background: var(--accent-ink); color: var(--accent); }
+.demo { margin-top: 18px; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); font-size: 13px; }
+.demo b { color: var(--ink); }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; margin-top: 18px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; min-width: 0; }
+.panel h2 { font-size: 22px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
+.mapbox { padding: 10px; }
+.lmap { height: min(76vh, 680px); min-height: 420px; border-radius: 8px; z-index: 0; }
+.lmap.pick { cursor: crosshair; }
+.leaflet-container { font-family: var(--font-body); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--ink); }
+.leaflet-popup-content { margin: 10px; width: 230px !important; }
+.pt-t { margin-top: 8px; font-weight: 600; font-size: 14px; line-height: 1.35; }
+.pt-t em { font-weight: 400; color: var(--muted); }
+.pt-m { margin-top: 4px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.leaflet-popup-close-button { color: var(--muted) !important; }
+
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 10px; }
+.chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 99px; cursor: pointer; border: 1.5px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 500; }
+.chip i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+.chip[aria-pressed="false"] { opacity: .45; }
+.chip small { font-family: var(--font-mono); color: var(--muted); font-size: 12px; }
+.switch { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; margin-top: 8px; }
+.status-line { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+.stats { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 14px; }
+.stat b { display: block; font-family: var(--font-display); font-stretch: 75%; font-size: 40px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+.rows { display: flex; flex-direction: column; gap: 4px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; background: none; text-align: left; width: 100%; }
+.row:hover { background: var(--bg); }
+.row[aria-pressed="true"] { border-color: var(--accent); background: var(--bg); }
+.row .nm { font-weight: 600; font-size: 14px; }
+.row .n { font-family: var(--font-mono); font-weight: 500; }
+.bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; display: flex; }
+.bar i { display: block; height: 100%; }
+.row .meta { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+
+.detail { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 14px; }
+.detail .empty, .hint { color: var(--muted); font-size: 14px; margin: 0; }
+.photo { aspect-ratio: 4 / 3; width: 100%; max-width: 100%; border-radius: 8px; overflow: hidden; display: grid; place-items: center; background: repeating-linear-gradient(135deg, var(--bg), var(--bg) 10px, var(--line) 10px, var(--line) 11px); color: var(--muted); font-family: var(--font-mono); font-size: 12px; text-align: center; padding: 10px; }
+.photo img { width: 100%; height: 100%; object-fit: cover; display: block; margin: -10px; max-width: none; }
+.photo a { color: var(--ink); font-weight: 600; }
+.dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 10px 0 0; font-size: 14px; }
+.dl dt { color: var(--muted); }
+.dl dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.mono { font-family: var(--font-mono); font-size: 13px; }
+.tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 99px; color: #fff; font-weight: 600; }
+.status { font-size: 12px; padding: 1px 8px; border-radius: 99px; border: 1.5px solid var(--g-rep); color: var(--g-rep); font-weight: 600; }
+.status.p { border-color: var(--muted); color: var(--muted); border-style: dashed; }
+
+.btn { background: var(--accent); color: var(--accent-ink); border: 2px solid #14241B; border-radius: 8px; padding: 9px 16px; font-weight: 700; cursor: pointer; }
+.btn.ghost { background: none; color: var(--ink); border: 1.5px solid var(--line); font-weight: 600; }
+.btn.no { background: none; color: var(--g-mam); border: 1.5px solid var(--g-mam); }
+.btn:active { transform: translateY(1px); }
+
+form.rep { display: grid; gap: 14px; }
+label.f { display: grid; gap: 5px; font-weight: 600; font-size: 14px; }
+label.f small { font-weight: 400; color: var(--muted); }
+.inp { background: var(--bg); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%; min-width: 0; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .two { grid-template-columns: 1fr; } }
+.drop { border: 2px dashed var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; background: var(--bg); }
+.drop .photo { max-height: 220px; }
+.where { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.vlist { display: grid; gap: 14px; }
+.vcard { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+@media (max-width: 560px) { .vcard { grid-template-columns: minmax(0, 1fr); } }
+.vcard .acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-weight: 600; z-index: 2000; max-width: 90vw; }
+[hidden] { display: none !important; }
+.foot { margin-top: 28px; color: var(--muted); font-size: 13px; max-width: 70ch; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="sign" aria-hidden="true"><span>!</span></div>
+      <div>
+        <h1>Fauna en la Vía</h1>
+        <p class="sub">Mapa colombiano de fauna atropellada. Cada foto con su ubicación se vuelve evidencia para pedir pasos de fauna.</p>
+      </div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Secciones">
+      <button class="tab" role="tab" id="t-mapa" data-v="mapa" aria-selected="true">Mapa</button>
+      <button class="tab" role="tab" id="t-reportar" data-v="reportar" aria-selected="false">Reportar</button>
+      <button class="tab" role="tab" id="t-validar" data-v="validar" aria-selected="false">Validar <span class="badge" id="pendN">0</span></button>
+    </div>
+  </header>
+
+  <div class="demo" id="banner"><b>Cargando la hoja de Google…</b></div>
+
+  <main id="v-mapa" class="grid">
+    <section class="panel mapbox" aria-label="Mapa de registros">
+      <div class="chips" id="chips"></div>
+      <div id="map" class="lmap"></div>
+      <label class="switch"><input type="checkbox" id="showPend"> Mostrar también registros sin validar</label>
+    </section>
+    <section class="panel">
+      <div class="stats" id="stats"></div>
+      <h2>Tramos con más registros</h2>
+      <p class="hint" style="margin-bottom:8px">Unidades funcionales de la hoja. Toca una para resaltarla y acercar el mapa.</p>
+      <div class="rows" id="hot"></div>
+      <div class="detail" id="detail"></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px">
+        <button class="btn ghost" id="copyCsv" type="button">Copiar datos (CSV)</button>
+        <button class="btn ghost" id="clearHl" type="button" hidden>Quitar resaltado</button>
+      </div>
+    </section>
+  </main>
+
+  <main id="v-reportar" hidden>
+    <div class="grid">
+      <section class="panel">
+        <h2>Reportar un animal</h2>
+        <form class="rep" id="form" novalidate>
+          <div class="drop">
+            <label class="f" for="foto">1. Foto del animal
+              <small>En el celular abre la cámara directamente.</small>
+              <input class="inp" type="file" id="foto" accept="image/*" capture="environment">
+            </label>
+            <div class="photo" id="prev">Sin foto todavía</div>
+          </div>
+          <label class="f" for="esp">2. Especie <small>Si no la conoces, deja "No sé" y la identifica el equipo.</small>
+            <select class="inp" id="esp"></select>
+          </label>
+          <label class="f" for="via">3. Tramo (unidad funcional) <select class="inp" id="via"></select></label>
+          <div class="two">
+            <label class="f" for="fecha">Fecha y hora <input class="inp" type="datetime-local" id="fecha"></label>
+            <label class="f" for="km">PR o kilómetro <small>Opcional</small><input class="inp" type="text" id="km" placeholder="Ej. 68+100"></label>
+          </div>
+          <label class="f" for="nota">Comentario <small>Opcional</small><textarea class="inp" id="nota" rows="2" placeholder="Ej. adulto, costado izquierdo"></textarea></label>
+          <div>
+            <div class="where">
+              <strong>4. Ubicación</strong>
+              <button class="btn ghost" type="button" id="gps">Usar mi ubicación</button>
+            </div>
+            <p class="hint" id="coordTxt" style="margin-top:6px">Usa el GPS del celular o toca el mapa donde estaba el animal.</p>
+          </div>
+          <div><button class="btn" type="submit">Enviar reporte</button></div>
+          <p class="hint">Por ahora el reporte queda solo en esta página. En la versión final se escribe como una fila nueva en la hoja.</p>
+        </form>
+      </section>
+      <section class="panel mapbox">
+        <div id="pickmap" class="lmap pick" aria-label="Toca el mapa para marcar dónde estaba el animal"></div>
+      </section>
+    </div>
+  </main>
+
+  <main id="v-validar" hidden>
+    <div class="panel" style="margin-top:18px">
+      <h2>Validación (vista del biólogo)</h2>
+      <p class="hint">Registros de la hoja con Validado distinto de "Sí", más los reportes nuevos. Aquí se confirma la especie y se valida. Por ahora el cambio no se escribe en la hoja.</p>
+    </div>
+    <div class="vlist" id="vlist" style="margin-top:14px"></div>
+  </main>
+
+  <p class="foot">Falta para la versión final: escribir los reportes y las fotos en la hoja y el Drive, ingreso con clave para el biólogo, y las capas de conectividad ecológica sobre el mapa para cruzarlas con los puntos.</p>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+  var SHEET = "1iY2ZIkoyxwPiNVE1eQjFMKy0eZceiFhoyyFoftcnEk4";
+  var SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SHEET + "/gviz/tq?tqx=out:csv&gid=0";
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  var $ = function (id) { return document.getElementById(id); };
+  var css = function (v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); };
+
+  var GROUPS = { mam: ["Mamíferos", "--g-mam"], rep: ["Reptiles", "--g-rep"], ave: ["Aves", "--g-ave"], anf: ["Anfibios", "--g-anf"], dom: ["Domésticos", "--g-dom"], inv: ["Invertebrados", "--g-inv"], nd: ["Sin identificar", "--muted"] };
+  var GORDER = ["mam", "rep", "ave", "anf", "dom", "inv", "nd"];
+  var GMAP = { "mamífero": "mam", "reptil": "rep", "ave": "ave", "anfibio": "anf", "doméstico": "dom", "invertebrado": "inv" };
+  function gcol(g) { return css(GROUPS[g][1]); }
+
+  var recs = [], SPECIES = [], spGroup = {}, nextNew = 1;
+  function groupOf(sp) { return spGroup[sp] || "nd"; }
+
+  function parseCSV(t) {
+    var rows = [], row = [], f = "", q = false, i = 0, c;
+    for (; i < t.length; i++) {
+      c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true;
+      else if (c === ",") { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && t[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; }
+      else f += c;
+    }
+    if (f !== "" || row.length) { row.push(f); rows.push(row); }
+    return rows;
+  }
+  function driveId(u) { var m = /\/d\/([\w-]+)/.exec(u || "") || /[?&]id=([\w-]+)/.exec(u || ""); return m ? m[1] : null; }
+  function toDate(f, h) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(f || ""); if (!m) return null;
+    var hh = 12, mm = 0, k = /^(\d{1,2}):(\d{2})/.exec(h || ""); if (k) { hh = +k[1]; mm = +k[2]; }
+    return new Date(+m[1], +m[2] - 1, +m[3], hh, mm).getTime();
+  }
+  function fromSheet(rows) {
+    var H = rows[0].map(function (x) { return x.trim(); });
+    var ix = function (n) { return H.indexOf(n); };
+    var c = { id: ix("ID"), f: ix("Fecha"), h: ix("Hora"), la: ix("Latitud"), lo: ix("Longitud"), sp: ix("Especie"), cn: ix("Nombre común"), g: ix("Grupo"), v: ix("Validado"),
+      ft: ix("Foto (URL)"), nt: ix("Notas"), uf: ix("Unidad funcional"), es: ix("Estructura más cercana"), ds: ix("Distancia a estructura (m)") };
+    var out = [];
+    rows.slice(1).forEach(function (r) {
+      if (!r[c.id]) return;
+      var la = parseFloat(r[c.la]), lo = parseFloat(r[c.lo]), g = GMAP[(r[c.g] || "").trim().toLowerCase()] || "nd";
+      out.push({ id: r[c.id].trim(), species: (r[c.sp] || "").trim() || "Sin identificar", common: (r[c.cn] || "").trim(), group: g, road: (r[c.uf] || "").trim() || "Sin unidad",
+        km: "", lat: isNaN(la) ? null : la, lon: isNaN(lo) ? null : lo, date: toDate(r[c.f], r[c.h]), hour: (r[c.h] || "").trim().slice(0, 5),
+        status: (r[c.v] || "").trim().toLowerCase() === "sí" ? "validado" : "pendiente", note: (r[c.nt] || "").trim(),
+        structure: (r[c.es] || "").trim(), dist: (r[c.ds] || "").trim(), photo: null, photoLink: (r[c.ft] || "").trim(), photoId: driveId(r[c.ft]) });
+    });
+    return out;
+  }
+
+  function fmtDate(ms, hour) { return ms == null ? "Sin fecha" : new Date(ms).toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" }) + (hour ? ", " + hour : ""); }
+  function coordsTxt(r) { return r.lat == null ? "Sin coordenadas" : r.lat.toFixed(5) + ", " + r.lon.toFixed(5); }
+  function thumb(r) { return "https://drive.google.com/thumbnail?id=" + r.photoId + "&sz=w600"; }
+  function photoHtml(r) {
+    if (r.photo) return '<div class="photo"><img alt="Foto del reporte" src="' + r.photo + '"></div>';
+    if (r.photoId) return '<div class="photo"><img alt="Foto del registro" src="' + thumb(r) + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.hidden=false"><span hidden>La foto no se puede mostrar aquí.<br><a href="' + esc(r.photoLink) + '" target="_blank" rel="noopener">Abrir en Drive</a></span></div>';
+    return '<div class="photo">Sin foto</div>';
+  }
+  function title(r) { return esc(r.species) + (r.common && r.common.toLowerCase() !== r.species.toLowerCase() ? " <em>" + esc(r.common) + "</em>" : ""); }
+
+  var st = { groups: { mam: true, rep: true, ave: true, anf: true, dom: true, inv: true, nd: true }, pend: false, hl: null, sel: null, pick: null };
+
+  /* mapas */
+  function layers() {
+    return {
+      osm: L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" }),
+      sat: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, attribution: "Imágenes © Esri, Maxar, Earthstar Geographics" })
+    };
+  }
+  var map = L.map("map").setView([6.8, -74.8], 10), ml = layers();
+  ml.osm.addTo(map); L.control.layers({ "Calles": ml.osm, "Satélite": ml.sat }, null, { position: "topright" }).addTo(map);
+  var ptLayer = L.layerGroup().addTo(map), markers = {};
+  var pmap = L.map("pickmap").setView([6.8, -74.8], 10), pl = layers(), pickMarker = null;
+  pl.osm.addTo(pmap); L.control.layers({ "Calles": pl.osm, "Satélite": pl.sat }, null, { position: "topright" }).addTo(pmap);
+
+  function visible() { return recs.filter(function (r) { return r.lat != null && st.groups[r.group] && (r.status === "validado" || st.pend); }); }
+  function popupHtml(r) {
+    return '<div class="pop">' + photoHtml(r) + '<div class="pt-t"><span class="tag" style="background:var(' + GROUPS[r.group][1] + ')">' + GROUPS[r.group][0] + "</span> " + title(r) + "</div>" +
+      '<div class="pt-m">' + esc(r.id) + " · " + esc(r.road) + (r.km ? ", PR " + esc(r.km) : "") + "<br>" + fmtDate(r.date, r.hour) + " · " + (r.status === "validado" ? "Validado" : "Sin validar") +
+      '<br><span class="mono">' + coordsTxt(r) + "</span></div></div>";
+  }
+  function markStyle(r) {
+    var c = gcol(r.group), pend = r.status === "pendiente", dim = st.hl && st.hl !== r.road, sel = st.sel === r.id;
+    return { radius: sel ? 11 : 8, color: pend ? c : "#ffffff", weight: sel ? 3.5 : 2, dashArray: pend ? "3 3" : null, fillColor: c, fillOpacity: pend ? .25 : (dim ? .3 : .95), opacity: dim ? .35 : 1 };
+  }
+  function drawPoints() {
+    ptLayer.clearLayers(); markers = {};
+    visible().forEach(function (r) {
+      var m = L.circleMarker([r.lat, r.lon], markStyle(r)).addTo(ptLayer);
+      m.bindPopup(function () { return popupHtml(r); }, { maxWidth: 260, minWidth: 230 });
+      m.on("click", function () {
+        var prev = st.sel; st.sel = r.id;
+        [prev, r.id].forEach(function (id) { var rr = recs.filter(function (q) { return q.id === id; })[0]; if (rr && markers[id]) markers[id].setStyle(markStyle(rr)); });
+        drawDetail();
+      });
+      markers[r.id] = m;
+    });
+  }
+  function fitAll() {
+    var v = recs.filter(function (r) { return r.lat != null; });
+    if (!v.length) return;
+    var b = L.latLngBounds(v.map(function (r) { return [r.lat, r.lon]; }));
+    map.fitBounds(b, { padding: [30, 30] }); pmap.fitBounds(b, { padding: [30, 30] });
+  }
+
+  function drawChips() {
+    var vc = {}; recs.forEach(function (r) { if (r.status === "validado") vc[r.group] = (vc[r.group] || 0) + 1; });
+    $("chips").innerHTML = GORDER.filter(function (g) { return vc[g]; }).map(function (g) {
+      return '<button type="button" class="chip" data-g="' + g + '" aria-pressed="' + st.groups[g] + '"><i style="background:var(' + GROUPS[g][1] + ')"></i>' + GROUPS[g][0] + ' <small>' + vc[g] + "</small></button>";
+    }).join("");
+  }
+  function drawStats() {
+    var v = recs.filter(function (r) { return r.status === "validado"; }), sp = {}, roads = {};
+    v.forEach(function (r) { sp[r.species] = 1; roads[r.road] = 1; });
+    var withPhoto = v.filter(function (r) { return r.photoId || r.photo; }).length;
+    $("stats").innerHTML = '<div class="stat"><b>' + v.length + "</b><span>Registros validados</span></div>" +
+      '<div class="stat"><b>' + Object.keys(sp).length + "</b><span>Especies</span></div>" +
+      '<div class="stat"><b>' + withPhoto + "</b><span>Con foto</span></div>";
+  }
+  function drawHot() {
+    var by = {};
+    recs.forEach(function (r) { if (r.status === "validado") (by[r.road] = by[r.road] || []).push(r); });
+    var list = Object.keys(by).map(function (k) { return { id: k, items: by[k] }; }).sort(function (a, b) { return b.items.length - a.items.length; });
+    var max = list.length ? list[0].items.length : 1;
+    $("hot").innerHTML = list.map(function (x) {
+      var c = {}, sp = {}; x.items.forEach(function (r) { c[r.group] = (c[r.group] || 0) + 1; sp[r.species] = (sp[r.species] || 0) + 1; });
+      var top = Object.keys(sp).sort(function (a, b) { return sp[b] - sp[a]; })[0];
+      var bar = GORDER.filter(function (g) { return c[g]; }).map(function (g) { return '<i style="width:' + (c[g] / max * 100) + '%;background:var(' + GROUPS[g][1] + ')"></i>'; }).join("");
+      return '<button type="button" class="row" data-r="' + esc(x.id) + '" aria-pressed="' + (st.hl === x.id) + '"><span class="nm">' + esc(x.id) + '</span><span class="n">' + x.items.length +
+        '</span><span class="bar" aria-hidden="true">' + bar + '</span><span class="meta">Más frecuente: ' + esc(top) + " (" + sp[top] + ")</span></button>";
+    }).join("");
+    $("clearHl").hidden = !st.hl;
+  }
+  function drawDetail() {
+    var r = recs.filter(function (q) { return q.id === st.sel; })[0], el = $("detail");
+    if (!r) { el.innerHTML = '<p class="empty">Toca un punto del mapa para ver el registro con su foto, tramo y coordenadas.</p>'; return; }
+    el.innerHTML = photoHtml(r) +
+      '<dl class="dl"><dt>Especie</dt><dd><span class="tag" style="background:var(' + GROUPS[r.group][1] + ')">' + GROUPS[r.group][0] + "</span> " + title(r) + "</dd>" +
+      "<dt>Registro</dt><dd>" + esc(r.id) + "</dd><dt>Tramo</dt><dd>" + esc(r.road) + (r.km ? ", PR " + esc(r.km) : "") + "</dd><dt>Fecha</dt><dd>" + fmtDate(r.date, r.hour) + "</dd>" +
+      '<dt>Coordenadas</dt><dd class="mono">' + coordsTxt(r) + "</dd>" +
+      (r.structure ? "<dt>Estructura</dt><dd>" + esc(r.structure) + (r.dist ? " (" + esc(r.dist) + " m)" : "") + "</dd>" : "") +
+      "<dt>Estado</dt><dd>" + (r.status === "validado" ? '<span class="status">Validado</span>' : '<span class="status p">Sin validar</span>') + "</dd>" +
+      (r.note ? "<dt>Notas</dt><dd>" + esc(r.note) + "</dd>" : "") + "</dl>";
+  }
+  function speciesOptions(sel) {
+    return SPECIES.map(function (s) { return "<option" + (s[0] === sel ? " selected" : "") + ">" + esc(s[0]) + "</option>"; }).join("");
+  }
+  function drawValidar() {
+    var pend = recs.filter(function (r) { return r.status === "pendiente"; });
+    $("pendN").textContent = pend.length;
+    $("vlist").innerHTML = pend.length ? pend.map(function (r) {
+      return '<article class="vcard">' + photoHtml(r) + "<div>" +
+        '<dl class="dl" style="margin-top:0"><dt>Registro</dt><dd>' + esc(r.id) + "</dd><dt>Tramo</dt><dd>" + esc(r.road) + "</dd><dt>Fecha</dt><dd>" + fmtDate(r.date, r.hour) +
+        '</dd><dt>Coordenadas</dt><dd class="mono">' + coordsTxt(r) + "</dd>" + (r.note ? "<dt>Notas</dt><dd>" + esc(r.note) + "</dd>" : "") + "</dl>" +
+        '<label class="f" style="margin-top:10px" for="sp-' + esc(r.id) + '">Especie confirmada<select class="inp" id="sp-' + esc(r.id) + '">' + speciesOptions(r.species) + "</select></label>" +
+        '<div class="acts"><button class="btn" type="button" data-ok="' + esc(r.id) + '">Validar</button><button class="btn no" type="button" data-no="' + esc(r.id) + '">Rechazar</button></div></div></article>';
+    }).join("") : '<div class="panel"><p class="hint">No hay registros sin validar.</p></div>';
+  }
+  function drawAll() { drawChips(); drawStats(); drawHot(); drawPoints(); drawDetail(); drawValidar(); }
+
+  /* formulario */
+  function fill() {
+    $("esp").innerHTML = speciesOptions("No sé");
+    var ufs = {}; recs.forEach(function (r) { ufs[r.road] = 1; });
+    $("via").innerHTML = Object.keys(ufs).sort().map(function (u) { return "<option>" + esc(u) + "</option>"; }).join("");
+    var d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); $("fecha").value = d.toISOString().slice(0, 16);
+  }
+  var photoData = null;
+  $("foto").addEventListener("change", function (e) {
+    var f = e.target.files[0]; if (!f) { photoData = null; $("prev").textContent = "Sin foto todavía"; return; }
+    var rd = new FileReader(); rd.onload = function () { photoData = rd.result; $("prev").innerHTML = '<img alt="Vista previa de la foto" src="' + photoData + '">'; }; rd.readAsDataURL(f);
+  });
+  function setPick(lat, lon, zoom) {
+    st.pick = [lon, lat];
+    if (pickMarker) pickMarker.setLatLng([lat, lon]); else pickMarker = L.circleMarker([lat, lon], { radius: 10, color: "#14241B", weight: 3, fillColor: "#F2B705", fillOpacity: 1 }).addTo(pmap);
+    if (zoom) pmap.setView([lat, lon], zoom);
+    $("coordTxt").innerHTML = 'Ubicación marcada: <span class="mono">' + lat.toFixed(5) + ", " + lon.toFixed(5) + "</span>";
+  }
+  pmap.on("click", function (e) { setPick(e.latlng.lat, e.latlng.lng, 0); });
+  $("gps").addEventListener("click", function () {
+    if (!navigator.geolocation) { toast("Este navegador no entrega la ubicación. Toca el mapa."); return; }
+    $("coordTxt").textContent = "Buscando tu ubicación…";
+    navigator.geolocation.getCurrentPosition(function (p) { setPick(p.coords.latitude, p.coords.longitude, 15); },
+      function () { $("coordTxt").textContent = "No se pudo leer el GPS. Revisa el permiso de ubicación o toca el mapa."; }, { enableHighAccuracy: true, timeout: 15000 });
+  });
+  $("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!st.pick) { toast("Falta la ubicación: usa el GPS o toca el mapa."); return; }
+    var sp = $("esp").value, d = $("fecha").value ? new Date($("fecha").value) : new Date();
+    recs.push({ id: "NUEVO-" + (nextNew++), species: sp, common: "", group: groupOf(sp), road: $("via").value, km: $("km").value.trim(), lon: st.pick[0], lat: st.pick[1],
+      date: d.getTime(), hour: ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2), status: "pendiente", note: $("nota").value.trim(), structure: "", dist: "", photo: photoData, photoLink: "", photoId: null });
+    st.pick = null; photoData = null; $("form").reset(); fill(); $("prev").textContent = "Sin foto todavía";
+    if (pickMarker) { pmap.removeLayer(pickMarker); pickMarker = null; }
+    $("coordTxt").textContent = "Usa el GPS del celular o toca el mapa donde estaba el animal.";
+    drawAll(); toast("Reporte enviado. Queda sin validar.");
+  });
+
+  /* eventos */
+  function show(v) {
+    ["mapa", "reportar", "validar"].forEach(function (n) { $("v-" + n).hidden = n !== v; $("t-" + n).setAttribute("aria-selected", n === v); });
+    try { history.replaceState(null, "", "#" + v); } catch (e) {}
+    setTimeout(function () { map.invalidateSize(); pmap.invalidateSize(); }, 50);
+  }
+  document.querySelectorAll(".tab").forEach(function (t) { t.addEventListener("click", function () { show(t.dataset.v); }); });
+  $("chips").addEventListener("click", function (e) { var b = e.target.closest(".chip"); if (!b) return; st.groups[b.dataset.g] = !st.groups[b.dataset.g]; drawChips(); drawPoints(); });
+  $("showPend").addEventListener("change", function (e) { st.pend = e.target.checked; drawPoints(); });
+  $("hot").addEventListener("click", function (e) {
+    var b = e.target.closest(".row"); if (!b) return;
+    st.hl = st.hl === b.dataset.r ? null : b.dataset.r; drawHot(); drawPoints();
+    var pts = recs.filter(function (r) { return st.hl && r.road === st.hl && r.lat != null; }).map(function (r) { return [r.lat, r.lon]; });
+    if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: 14 }); else if (!st.hl) fitAll();
+  });
+  $("clearHl").addEventListener("click", function () { st.hl = null; drawHot(); drawPoints(); fitAll(); });
+  $("vlist").addEventListener("click", function (e) {
+    var ok = e.target.closest("[data-ok]"), no = e.target.closest("[data-no]"), id = ok ? ok.dataset.ok : no ? no.dataset.no : null; if (!id) return;
+    var r = recs.filter(function (q) { return q.id === id; })[0]; if (!r) return;
+    if (ok) { r.species = document.getElementById("sp-" + id).value; r.group = groupOf(r.species); r.status = "validado"; toast("Registro validado en esta página."); }
+    else { recs.splice(recs.indexOf(r), 1); toast("Registro rechazado en esta página."); }
+    drawAll();
+  });
+  $("copyCsv").addEventListener("click", function () {
+    var q = function (s) { return '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"'; };
+    var rows = [["id", "fecha", "hora", "especie", "grupo", "tramo", "latitud", "longitud"].join(",")];
+    recs.filter(function (r) { return r.status === "validado" && r.lat != null; }).forEach(function (r) {
+      rows.push([q(r.id), r.date ? new Date(r.date).toISOString().slice(0, 10) : "", r.hour, q(r.species), q(GROUPS[r.group][0]), q(r.road), r.lat.toFixed(6), r.lon.toFixed(6)].join(","));
+    });
+    var csv = rows.join("\n");
+    function fb() { var ta = document.createElement("textarea"); ta.value = csv; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (x) {} ta.remove(); toast(ok ? "Datos copiados. Pégalos en Excel." : "No se pudo copiar."); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(csv).then(function () { toast("Datos copiados. Pégalos en Excel."); }, fb); else fb();
+  });
+  var tt; function toast(m) { var t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(function () { t.hidden = true; }, 3200); }
+
+  /* arranque: leer la hoja de Google */
+  fetch(SHEET_URL).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (t) {
+    recs = fromSheet(parseCSV(t));
+    var cnt = {}; recs.forEach(function (r) { if (r.species !== "Sin identificar") { spGroup[r.species] = r.group; cnt[r.species] = (cnt[r.species] || 0) + 1; } });
+    SPECIES = Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; }).map(function (s) { return [s, spGroup[s]]; }); SPECIES.push(["No sé", "nd"]);
+    var noCoord = recs.filter(function (r) { return r.lat == null; }).length;
+    $("banner").innerHTML = "<b>Datos reales de la hoja de Google.</b> " + recs.length + " registros leídos" + (noCoord ? ", " + noCoord + " sin coordenadas (no se dibujan)" : "") +
+      ". Se actualizan cada vez que abres la página. Los reportes nuevos todavía no se escriben en la hoja.";
+    fill(); drawAll(); fitAll();
+  }).catch(function () {
+    $("banner").innerHTML = "<b>No se pudo leer la hoja.</b> Revisa que esté compartida como \"cualquier persona con el link puede ver\" y recarga.";
+  });
+  var h = location.hash.slice(1); if (h === "reportar" || h === "validar") show(h);
+})();
+</script>
+</body>
+</html>

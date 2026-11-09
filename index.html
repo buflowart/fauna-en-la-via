@@ -16,6 +16,8 @@
   --bg: #EAF0E6; --surface: #F7FAF5; --ink: #14241B; --muted: #566A5D; --line: #C9D7C9;
   --accent: #F2B705; --accent-ink: #1A1500;
   --g-mam: #C4492F; --g-rep: #3F8A45; --g-ave: #2F66B3; --g-anf: #8A52B8; --g-dom: #B07A1E; --g-inv: #2A8C93;
+  --c-near: #B5452B; --c-far: #3A6EA5; --c-forest: #2E7D4F;
+  --img-forest: #228B46; --img-loss: #D63027;
   --font-display: "Archivo", "Arial Narrow", Arial, sans-serif;
   --font-body: "IBM Plex Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -25,6 +27,7 @@
     color-scheme: dark;
     --bg: #0E1913; --surface: #15231B; --ink: #E5EEE7; --muted: #94A99B; --line: #27402F;
     --g-mam: #E0765C; --g-rep: #66B56C; --g-ave: #6A9BE0; --g-anf: #B58AE0; --g-dom: #D9A545; --g-inv: #5FC0C7;
+    --c-near: #D2603F; --c-far: #4F8AD1; --c-forest: #4FA56C;
   }
 }
 * { box-sizing: border-box; }
@@ -79,6 +82,29 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 900; letter-spacing: -0.01e
 .conn .op { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 8px; }
 .conn .btn { margin-top: 8px; padding: 5px 12px; font-size: 13px; }
 .hint.small { font-size: 12px; margin-top: 8px; }
+.views { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.vlabel { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-right: 4px; }
+.seg { border: 1.5px solid var(--line); background: var(--bg); border-radius: 99px; padding: 5px 12px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); }
+.seg[aria-pressed="true"] { background: var(--accent); border-color: #14241B; color: var(--accent-ink); }
+.leaflet-image-layer.px { image-rendering: pixelated; }
+.viewinfo { margin-top: 12px; display: grid; gap: 14px; }
+.viewinfo:empty { display: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.sw.line { height: 3px; border-radius: 2px; }
+.facts { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 6px; }
+.facts b { font-variant-numeric: tabular-nums; }
+.chart h3 { font-family: var(--font-body); font-size: 13px; font-weight: 600; margin: 0 0 8px; }
+.hbar { display: grid; grid-template-columns: 92px minmax(0, 1fr) 52px; align-items: center; gap: 8px; font-size: 12.5px; margin-bottom: 4px; }
+.hbar .lb { color: var(--muted); }
+.hbar .tr { height: 14px; position: relative; }
+.hbar .tr i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; display: block; }
+.hbar .vl { font-family: var(--font-mono); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.hbar:hover .lb, .hbar:hover .vl { color: var(--ink); font-weight: 600; }
+.grp { font-size: 12px; font-weight: 600; color: var(--ink); margin: 8px 0 4px; }
+.axis-note { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.caveat { font-size: 12px; color: var(--muted); margin: 0; }
 
 .stats { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 14px; }
 .stat b { display: block; font-family: var(--font-display); font-stretch: 75%; font-size: 40px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -156,12 +182,18 @@ label.f small { font-weight: 400; color: var(--muted); }
       <div class="chips" id="chips"></div>
       <div id="map" class="lmap"></div>
       <label class="switch"><input type="checkbox" id="showPend"> Mostrar también registros sin validar</label>
-      <div class="conn">
-        <label class="switch"><input type="checkbox" id="connOn" checked> Conectividad del ocelote (ilustrativa)</label>
-        <label class="op">Opacidad <input type="range" id="connOp" min="10" max="100" value="65" aria-label="Opacidad de la capa de conectividad"></label>
+      <div class="views" role="group" aria-label="Vista del mapa">
+        <span class="vlabel">Vista</span>
+        <button type="button" class="seg" data-view="registros" aria-pressed="false">Solo registros</button>
+        <button type="button" class="seg" data-view="conectividad" aria-pressed="false">Conectividad del ocelote</button>
+        <button type="button" class="seg" data-view="bosque" aria-pressed="true">Bosque y carretera</button>
+      </div>
+      <div class="conn" id="viewCtl">
+        <label class="op">Opacidad <input type="range" id="connOp" min="10" max="100" value="70" aria-label="Opacidad de la capa"></label>
         <button class="btn ghost" id="connGo" type="button">Ir a la zona</button>
       </div>
-      <p class="hint small">Imagen tomada de una diapositiva de conectividad funcional y ubicada sobre el mapa. En la zona UF2 se calzó con 14 registros de la hoja; en la UF1, con el registro del ocelote y la carretera. En las dos, la vía de la diapositiva cae a menos de 50 m de la carretera real. Los colores no tienen leyenda todavía. Cuando lleguen los archivos originales se reemplaza por la capa exacta.</p>
+      <div id="viewInfo" class="viewinfo"></div>
+      <p class="hint small" id="connHint" hidden>Imagen tomada de una diapositiva de conectividad funcional y ubicada sobre el mapa. En la zona UF2 se calzó con 14 registros de la hoja; en la UF1, con el registro del ocelote y la carretera. En las dos, la vía de la diapositiva cae a menos de 50 m de la carretera real. Los colores no tienen leyenda todavía. Cuando lleguen los archivos originales se reemplaza por la capa exacta.</p>
     </section>
     <section class="panel">
       <div class="stats" id="stats"></div>
@@ -307,11 +339,68 @@ label.f small { font-weight: 400; color: var(--muted); }
     { src: "capas/ocelote-uf2.png", b: [[6.49157, -74.89956], [6.72011, -74.69277]] },
     { src: "capas/ocelote-uf1.png", b: [[6.93280, -74.81279], [7.08311, -74.67133]] }
   ];
-  var connLayers = CONN.map(function (c) { return L.imageOverlay(c.src, c.b, { pane: "conn", opacity: .65, alt: "Mapa de conectividad del ocelote" }).addTo(map); });
-  function connBounds() { return L.latLngBounds(CONN.map(function (c) { return c.b; }).reduce(function (a, b) { return a.concat(b); }, [])); }
-  $("connOn").addEventListener("change", function (e) { connLayers.forEach(function (l) { if (e.target.checked) l.addTo(map); else map.removeLayer(l); }); });
-  $("connOp").addEventListener("input", function (e) { connLayers.forEach(function (l) { l.setOpacity(e.target.value / 100); }); });
-  $("connGo").addEventListener("click", function () { map.fitBounds(connBounds(), { padding: [20, 20] }); });
+  /* vistas del mapa: solo registros, conectividad del ocelote o bosque y carretera */
+  var VIEWS = {
+    registros: { layers: [], lines: [], bounds: null },
+    conectividad: {
+      layers: CONN.map(function (c) { return L.imageOverlay(c.src, c.b, { pane: "conn", opacity: .7, alt: "Mapa de conectividad del ocelote" }); }),
+      lines: [],
+      bounds: L.latLngBounds(CONN.map(function (c) { return c.b; }).reduce(function (a, b) { return a.concat(b); }, []))
+    },
+    bosque: { layers: [], lines: [], bounds: null, data: null }
+  };
+  var view = "bosque";
+  function nf(n, d) { return Number(n).toLocaleString("es-CO", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); }
+  function setView(v) {
+    view = v;
+    Object.keys(VIEWS).forEach(function (k) { VIEWS[k].layers.concat(VIEWS[k].lines).forEach(function (l) { if (map.hasLayer(l)) map.removeLayer(l); }); });
+    var op = $("connOp").value / 100;
+    VIEWS[v].layers.forEach(function (l) { l.setOpacity(op); l.addTo(map); });
+    VIEWS[v].lines.forEach(function (l) { l.addTo(map); });
+    document.querySelectorAll(".seg").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.view === v); });
+    $("viewCtl").hidden = v === "registros";
+    $("connHint").hidden = v !== "conectividad";
+    $("viewInfo").innerHTML = v === "bosque" ? bosqueInfo() : "";
+  }
+  document.querySelectorAll(".seg").forEach(function (b) { b.addEventListener("click", function () { setView(b.dataset.view); }); });
+  $("connOp").addEventListener("input", function (e) { VIEWS[view].layers.forEach(function (l) { l.setOpacity(e.target.value / 100); }); });
+  $("connGo").addEventListener("click", function () { var b = VIEWS[view].bounds; if (b) map.fitBounds(b, { padding: [20, 20] }); });
+
+  function hbar(label, val, max, unit, color, digits) {
+    return '<div class="hbar" title="' + esc(label) + ": " + nf(val, digits) + unit + '"><span class="lb">' + esc(label) + '</span><span class="tr"><i style="width:' +
+      Math.max(1, val / max * 100) + "%;background:var(" + color + ')"></i></span><span class="vl">' + nf(val, digits) + unit + "</span></div>";
+  }
+  function bosqueInfo() {
+    var d = VIEWS.bosque.data;
+    if (!d) return '<p class="caveat">Cargando el análisis de bosque…</p>';
+    var avg = function (key, a, b) { var r = d.por_anio.filter(function (x) { return x.anio >= a && x.anio <= b; }); return r.reduce(function (s, x) { return s + x[key]; }, 0) / r.length; };
+    var p1c = avg("cerca_pct", 2001, 2012), p1l = avg("lejos_pct", 2001, 2012), p2c = avg("cerca_pct", 2013, 2024), p2l = avg("lejos_pct", 2013, 2024);
+    var b0 = d.bandas[0], bl = d.bandas[d.bandas.length - 1], fr = d.fragmentacion, big = fr.mayores[0];
+    var bandRows = d.bandas.map(function (b) { return hbar(nf(b.desde_km, b.desde_km % 1 ? 1 : 0) + "–" + nf(b.hasta_km, b.hasta_km % 1 ? 1 : 0) + " km", b.bosque_hoy_pct, 100, " %", "--c-forest", 0); }).join("");
+    var mx = Math.max(p1c, p1l, p2c, p2l) * 1.1;
+    return '<div class="legend"><span><i class="sw" style="background:var(--img-forest)"></i>Bosque en pie (2024)</span><span><i class="sw" style="background:var(--img-loss)"></i>Bosque perdido 2001–2024</span>' +
+      '<span><i class="sw line" style="background:var(--ink);width:22px"></i>Autopista (' + nf(d.via_km, 0) + ' km analizados)</span></div>' +
+      '<ul class="facts">' +
+      "<li>En el corredor (" + d.corredor_km + " km a cada lado de la vía) había <b>" + nf(d.total.bosque2000_ha) + " ha</b> de bosque en 2000. Se perdieron <b>" + nf(d.total.perdido_ha) + " ha</b>, el <b>" + nf(d.total.perdida_pct, 1) + " %</b>.</li>" +
+      "<li>Junto a la vía hay menos bosque: <b>" + nf(b0.bosque_hoy_pct) + " %</b> del terreno en los primeros 500 m, frente a <b>" + nf(bl.bosque_hoy_pct) + " %</b> a más de 5 km.</li>" +
+      "<li>Entre 2013 y 2024 el bosque a menos de 1 km de la vía se perdió más rápido que el lejano: <b>" + nf(p2c, 2) + " %</b> al año frente a <b>" + nf(p2l, 2) + " %</b>. Entre 2001 y 2012 era parecido (" + nf(p1c, 2) + " % frente a " + nf(p1l, 2) + " %).</li>" +
+      (big ? "<li>El bosque continuo más grande del corredor (<b>" + nf(big.area_ha) + " ha</b>) queda dividido en <b>" + big.pedazos + " bloques</b> por la vía.</li>" : "") +
+      "</ul>" +
+      '<div class="chart"><h3>Bosque en pie hoy, según la distancia a la vía</h3>' + bandRows + '<div class="axis-note">Porcentaje del terreno de cada franja que sigue siendo bosque (escala de 0 a 100 %).</div></div>' +
+      '<div class="chart"><h3>Pérdida anual de bosque, cerca y lejos de la vía</h3>' +
+      '<div class="legend" style="margin-bottom:4px"><span><i class="sw" style="background:var(--c-near)"></i>A menos de 1 km</span><span><i class="sw" style="background:var(--c-far)"></i>De 5 a 10 km</span></div>' +
+      '<div class="grp">2001–2012</div>' + hbar("Cerca", p1c, mx, " %", "--c-near", 2) + hbar("Lejos", p1l, mx, " %", "--c-far", 2) +
+      '<div class="grp">2013–2024</div>' + hbar("Cerca", p2c, mx, " %", "--c-near", 2) + hbar("Lejos", p2l, mx, " %", "--c-far", 2) +
+      '<div class="axis-note">Promedio por año, en % del bosque que había en 2000 en cada franja.</div></div>' +
+      '<p class="caveat">Fuente: ' + esc(d.fuente) + ". Cuenta como bosque todo dosel de " + d.umbral_dosel_pct + " % o más, con píxeles de 30 m; incluye plantaciones. Muestra lo que pasó cerca de la vía, pero no prueba que la vía lo causara: falta cruzarlo con las fechas de obra de cada tramo.</p>";
+  }
+  fetch("capas/bosque-corredor.json").then(function (r) { return r.json(); }).then(function (d) {
+    var B = VIEWS.bosque; B.data = d; B.bounds = L.latLngBounds(d.limites);
+    B.layers = [L.imageOverlay("capas/bosque-corredor.png", d.limites, { pane: "conn", opacity: .7, className: "px", alt: "Bosque en pie y bosque perdido en el corredor" })];
+    B.lines = [L.polyline(d.via, { pane: "conn", color: css("--ink"), weight: 3, opacity: .9 })];
+    if (view === "bosque") setView("bosque");
+  }).catch(function () { VIEWS.bosque.data = null; $("viewInfo").innerHTML = '<p class="caveat">No se pudo cargar el análisis de bosque.</p>'; });
+  setView(view);
   var ptLayer = L.layerGroup().addTo(map), markers = {};
   var pmap = L.map("pickmap").setView([6.8, -74.8], 10), pl = layers(), pickMarker = null;
   pl.osm.addTo(pmap); L.control.layers({ "Calles": pl.osm, "Satélite": pl.sat }, null, { position: "topright" }).addTo(pmap);

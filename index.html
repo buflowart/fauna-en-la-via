@@ -161,7 +161,7 @@ label.f small { font-weight: 400; color: var(--muted); }
         <label class="op">Opacidad <input type="range" id="connOp" min="10" max="100" value="65" aria-label="Opacidad de la capa de conectividad"></label>
         <button class="btn ghost" id="connGo" type="button">Ir a la zona</button>
       </div>
-      <p class="hint small">Imagen tomada de una diapositiva de conectividad funcional y ubicada sobre el mapa. En la zona UF2 se calzó con 14 registros de la hoja (error de unos 60 m); la zona UF1 usa la misma escala y un solo punto de referencia. Los colores no tienen leyenda todavía. Cuando lleguen los archivos originales se reemplaza por la capa exacta.</p>
+      <p class="hint small">Imagen tomada de una diapositiva de conectividad funcional y ubicada sobre el mapa. En la zona UF2 se calzó con 14 registros de la hoja; en la UF1, con el registro del ocelote y la carretera. En las dos, la vía de la diapositiva cae a menos de 50 m de la carretera real. Los colores no tienen leyenda todavía. Cuando lleguen los archivos originales se reemplaza por la capa exacta.</p>
     </section>
     <section class="panel">
       <div class="stats" id="stats"></div>
@@ -305,7 +305,7 @@ label.f small { font-weight: 400; color: var(--muted); }
   map.createPane("conn"); map.getPane("conn").style.zIndex = 350;
   var CONN = [
     { src: "capas/ocelote-uf2.png", b: [[6.49157, -74.89956], [6.72011, -74.69277]] },
-    { src: "capas/ocelote-uf1.png", b: [[6.88983, -74.84868], [7.12034, -74.63173]] }
+    { src: "capas/ocelote-uf1.png", b: [[6.93280, -74.81279], [7.08311, -74.67133]] }
   ];
   var connLayers = CONN.map(function (c) { return L.imageOverlay(c.src, c.b, { pane: "conn", opacity: .65, alt: "Mapa de conectividad del ocelote" }).addTo(map); });
   function connBounds() { return L.latLngBounds(CONN.map(function (c) { return c.b; }).reduce(function (a, b) { return a.concat(b); }, [])); }

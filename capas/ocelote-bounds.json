@@ -10,20 +10,23 @@
    225,
    326,
    571
-  ]
+  ],
+  "metodo": "ancla ocelote UF2 + 13 registros de mam\u00edferos, error mediano 50 m; v\u00eda morada a 46 m de la carretera real"
  },
  "uf1": {
   "nombre": "ocelote-uf1",
-  "sur": 6.889826529262885,
-  "oeste": -74.84867926429908,
-  "norte": 7.120340974649266,
-  "este": -74.63173306970876,
+  "sur": 6.9328,
+  "oeste": -74.81279,
+  "norte": 7.08311,
+  "este": -74.67133,
   "px": [
    333,
    224,
    659,
    573
-  ]
+  ],
+  "escala_px_km": 21.0,
+  "metodo": "ancla ocelote UF1 + v\u00eda morada ajustada a la carretera real (OSRM), mediana 42 m"
  },
  "escala_px_km": 13.692727690263894
 }

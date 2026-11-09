@@ -21,4 +21,6 @@ analisis/.venv/Scripts/python analisis/bosque_corredor.py
 
 Fuente del bosque: Hansen et al., Global Forest Change 2000-2024 (v1.12), Universidad de Maryland.
 
+- `capas/ideam-corredor.*`: bosque natural 2025 del IDEAM (SMByC) en el mismo corredor, y su comparación con Hansen. Se genera después del anterior con `analisis/.venv/Scripts/python analisis/comparar_ideam.py`. Es la fuente por defecto de la vista de bosque.
+
 Estado: demostración temporal. Reportar y Validar todavía no escriben en la hoja.

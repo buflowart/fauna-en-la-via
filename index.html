@@ -347,13 +347,16 @@ label.f small { font-weight: 400; color: var(--muted); }
       lines: [],
       bounds: L.latLngBounds(CONN.map(function (c) { return c.b; }).reduce(function (a, b) { return a.concat(b); }, []))
     },
-    bosque: { layers: [], lines: [], bounds: null, data: null }
+    bosque: { layers: [], lines: [], bounds: null, data: null, ideam: null, src: "ideam", lI: [], lH: [] }
   };
   var view = "bosque";
   function nf(n, d) { return Number(n).toLocaleString("es-CO", { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); }
   function setView(v) {
     view = v;
-    Object.keys(VIEWS).forEach(function (k) { VIEWS[k].layers.concat(VIEWS[k].lines).forEach(function (l) { if (map.hasLayer(l)) map.removeLayer(l); }); });
+    Object.keys(VIEWS).forEach(function (k) {
+      var V = VIEWS[k];
+      [].concat(V.layers, V.lines, V.lI || [], V.lH || []).forEach(function (l) { if (map.hasLayer(l)) map.removeLayer(l); });
+    });
     var op = $("connOp").value / 100;
     VIEWS[v].layers.forEach(function (l) { l.setOpacity(op); l.addTo(map); });
     VIEWS[v].lines.forEach(function (l) { l.addTo(map); });
@@ -371,8 +374,29 @@ label.f small { font-weight: 400; color: var(--muted); }
       Math.max(1, val / max * 100) + "%;background:var(" + color + ')"></i></span><span class="vl">' + nf(val, digits) + unit + "</span></div>";
   }
   function bosqueInfo() {
+    var B = VIEWS.bosque;
+    if (!B.data || !B.ideam) return '<p class="caveat">Cargando el análisis de bosque…</p>';
+    var tg = '<div class="views" style="margin-top:0"><span class="vlabel">Fuente</span>' +
+      '<button type="button" class="seg" data-src="ideam" aria-pressed="' + (B.src === "ideam") + '">Bosque natural (IDEAM 2025)</button>' +
+      '<button type="button" class="seg" data-src="hansen" aria-pressed="' + (B.src === "hansen") + '">Pérdida por año (Hansen)</button></div>';
+    return tg + (B.src === "ideam" ? ideamInfo() : hansenInfo());
+  }
+  function ideamInfo() {
+    var i = VIEWS.bosque.ideam, d = VIEWS.bosque.data, b0 = i.bandas[0], bl = i.bandas[i.bandas.length - 1];
+    var pct = 100 * i.ideam_bosque_ha / i.corredor_ha, pctH = 100 * i.hansen_bosque_ha / i.corredor_ha;
+    var rows = i.bandas.map(function (b) { return hbar(nf(b.desde_km, b.desde_km % 1 ? 1 : 0) + "–" + nf(b.hasta_km, b.hasta_km % 1 ? 1 : 0) + " km", b.ideam_pct, 100, " %", "--c-forest", 0); }).join("");
+    return '<div class="legend"><span><i class="sw" style="background:var(--img-forest)"></i>Bosque natural (2025)</span>' +
+      '<span><i class="sw line" style="background:var(--ink);width:22px"></i>Autopista (' + nf(d.via_km, 0) + ' km analizados)</span></div>' +
+      '<ul class="facts">' +
+      "<li>En el corredor (" + d.corredor_km + " km a cada lado de la vía) hay <b>" + nf(i.ideam_bosque_ha) + " ha</b> de bosque natural: el <b>" + nf(pct) + " %</b> del terreno.</li>" +
+      "<li>Cerca de la vía queda la mitad: <b>" + nf(b0.ideam_pct, 1) + " %</b> de bosque natural en los primeros 500 m, frente a <b>" + nf(bl.ideam_pct, 1) + " %</b> entre 5 y 10 km.</li>" +
+      "<li>Hansen, que cuenta como bosque todo dosel de " + d.umbral_dosel_pct + " % o más (incluye rastrojo, cultivos con sombra y plantaciones), da " + nf(pctH) + " %. Por eso aquí se usa el IDEAM, que es la cifra oficial de Colombia.</li>" +
+      "</ul>" +
+      '<div class="chart"><h3>Bosque natural según la distancia a la vía</h3>' + rows + '<div class="axis-note">Porcentaje del terreno de cada franja que es bosque natural (escala de 0 a 100 %).</div></div>' +
+      '<p class="caveat">Fuente: IDEAM, Sistema de Monitoreo de Bosques y Carbono, superficie cubierta por bosque natural 2025 (30 m). Para ver en qué año se perdió el bosque, cambia la fuente a Hansen.</p>';
+  }
+  function hansenInfo() {
     var d = VIEWS.bosque.data;
-    if (!d) return '<p class="caveat">Cargando el análisis de bosque…</p>';
     var avg = function (key, a, b) { var r = d.por_anio.filter(function (x) { return x.anio >= a && x.anio <= b; }); return r.reduce(function (s, x) { return s + x[key]; }, 0) / r.length; };
     var p1c = avg("cerca_pct", 2001, 2012), p1l = avg("lejos_pct", 2001, 2012), p2c = avg("cerca_pct", 2013, 2024), p2l = avg("lejos_pct", 2013, 2024);
     var b0 = d.bandas[0], bl = d.bandas[d.bandas.length - 1], fr = d.fragmentacion, big = fr.mayores[0];
@@ -394,9 +418,15 @@ label.f small { font-weight: 400; color: var(--muted); }
       '<div class="axis-note">Promedio por año, en % del bosque que había en 2000 en cada franja.</div></div>' +
       '<p class="caveat">Fuente: ' + esc(d.fuente) + ". Cuenta como bosque todo dosel de " + d.umbral_dosel_pct + " % o más, con píxeles de 30 m; incluye plantaciones. Muestra lo que pasó cerca de la vía, pero no prueba que la vía lo causara: falta cruzarlo con las fechas de obra de cada tramo.</p>";
   }
-  fetch("capas/bosque-corredor.json").then(function (r) { return r.json(); }).then(function (d) {
-    var B = VIEWS.bosque; B.data = d; B.bounds = L.latLngBounds(d.limites);
-    B.layers = [L.imageOverlay("capas/bosque-corredor.png", d.limites, { pane: "conn", opacity: .7, className: "px", alt: "Bosque en pie y bosque perdido en el corredor" })];
+  $("viewInfo").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-src]"); if (!b) return;
+    var B = VIEWS.bosque; B.src = b.dataset.src; B.layers = B.src === "ideam" ? B.lI : B.lH; setView("bosque");
+  });
+  Promise.all(["capas/bosque-corredor.json", "capas/ideam-corredor.json"].map(function (u) { return fetch(u).then(function (r) { if (!r.ok) throw 0; return r.json(); }); })).then(function (res) {
+    var d = res[0], B = VIEWS.bosque; B.data = d; B.ideam = res[1]; B.bounds = L.latLngBounds(d.limites);
+    B.lH = [L.imageOverlay("capas/bosque-corredor.png", d.limites, { pane: "conn", opacity: .7, className: "px", alt: "Bosque en pie y bosque perdido en el corredor (Hansen)" })];
+    B.lI = [L.imageOverlay("capas/ideam-corredor.png", d.limites, { pane: "conn", opacity: .7, className: "px", alt: "Bosque natural 2025 en el corredor (IDEAM)" })];
+    B.layers = B.src === "ideam" ? B.lI : B.lH;
     B.lines = [L.polyline(d.via, { pane: "conn", color: css("--ink"), weight: 3, opacity: .9 })];
     if (view === "bosque") setView("bosque");
   }).catch(function () { VIEWS.bosque.data = null; $("viewInfo").innerHTML = '<p class="caveat">No se pudo cargar el análisis de bosque.</p>'; });

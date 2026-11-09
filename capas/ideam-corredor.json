@@ -1,0 +1,43 @@
+{
+ "fuente": "IDEAM, SMByC: Superficie cubierta por bosque natural 2025 (bnb_2025_v8_260729)",
+ "corredor_ha": 175630,
+ "ideam_bosque_ha": 37520,
+ "hansen_bosque_ha": 111239,
+ "ambos_ha": 34404,
+ "solo_hansen_ha": 76835,
+ "solo_ideam_ha": 3116,
+ "sin_info_ha": 0,
+ "coincidencia_pct": 30.1,
+ "bandas": [
+  {
+   "desde_km": 0,
+   "hasta_km": 0.5,
+   "ideam_pct": 12.5,
+   "hansen_pct": 52.3
+  },
+  {
+   "desde_km": 0.5,
+   "hasta_km": 1,
+   "ideam_pct": 19.7,
+   "hansen_pct": 60.3
+  },
+  {
+   "desde_km": 1,
+   "hasta_km": 2,
+   "ideam_pct": 18.2,
+   "hansen_pct": 59.7
+  },
+  {
+   "desde_km": 2,
+   "hasta_km": 5,
+   "ideam_pct": 19.7,
+   "hansen_pct": 64.0
+  },
+  {
+   "desde_km": 5,
+   "hasta_km": 10,
+   "ideam_pct": 23.7,
+   "hansen_pct": 64.9
+  }
+ ]
+}

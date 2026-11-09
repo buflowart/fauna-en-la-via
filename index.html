@@ -74,6 +74,11 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 900; letter-spacing: -0.01e
 .chip small { font-family: var(--font-mono); color: var(--muted); font-size: 12px; }
 .switch { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; margin-top: 8px; }
 .status-line { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.conn { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; margin-top: 4px; }
+.conn .switch { margin-top: 8px; }
+.conn .op { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 8px; }
+.conn .btn { margin-top: 8px; padding: 5px 12px; font-size: 13px; }
+.hint.small { font-size: 12px; margin-top: 8px; }
 
 .stats { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 14px; }
 .stat b { display: block; font-family: var(--font-display); font-stretch: 75%; font-size: 40px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -151,6 +156,12 @@ label.f small { font-weight: 400; color: var(--muted); }
       <div class="chips" id="chips"></div>
       <div id="map" class="lmap"></div>
       <label class="switch"><input type="checkbox" id="showPend"> Mostrar también registros sin validar</label>
+      <div class="conn">
+        <label class="switch"><input type="checkbox" id="connOn" checked> Conectividad del ocelote (ilustrativa)</label>
+        <label class="op">Opacidad <input type="range" id="connOp" min="10" max="100" value="65" aria-label="Opacidad de la capa de conectividad"></label>
+        <button class="btn ghost" id="connGo" type="button">Ir a la zona</button>
+      </div>
+      <p class="hint small">Imagen tomada de una diapositiva de conectividad funcional y ubicada sobre el mapa. En la zona UF2 se calzó con 14 registros de la hoja (error de unos 60 m); la zona UF1 usa la misma escala y un solo punto de referencia. Los colores no tienen leyenda todavía. Cuando lleguen los archivos originales se reemplaza por la capa exacta.</p>
     </section>
     <section class="panel">
       <div class="stats" id="stats"></div>
@@ -290,6 +301,17 @@ label.f small { font-weight: 400; color: var(--muted); }
   }
   var map = L.map("map").setView([6.8, -74.8], 10), ml = layers();
   ml.osm.addTo(map); L.control.layers({ "Calles": ml.osm, "Satélite": ml.sat }, null, { position: "topright" }).addTo(map);
+  /* capa de conectividad del ocelote: imagen de una diapositiva, ubicada con los registros de la hoja */
+  map.createPane("conn"); map.getPane("conn").style.zIndex = 350;
+  var CONN = [
+    { src: "capas/ocelote-uf2.png", b: [[6.49157, -74.89956], [6.72011, -74.69277]] },
+    { src: "capas/ocelote-uf1.png", b: [[6.88983, -74.84868], [7.12034, -74.63173]] }
+  ];
+  var connLayers = CONN.map(function (c) { return L.imageOverlay(c.src, c.b, { pane: "conn", opacity: .65, alt: "Mapa de conectividad del ocelote" }).addTo(map); });
+  function connBounds() { return L.latLngBounds(CONN.map(function (c) { return c.b; }).reduce(function (a, b) { return a.concat(b); }, [])); }
+  $("connOn").addEventListener("change", function (e) { connLayers.forEach(function (l) { if (e.target.checked) l.addTo(map); else map.removeLayer(l); }); });
+  $("connOp").addEventListener("input", function (e) { connLayers.forEach(function (l) { l.setOpacity(e.target.value / 100); }); });
+  $("connGo").addEventListener("click", function () { map.fitBounds(connBounds(), { padding: [20, 20] }); });
   var ptLayer = L.layerGroup().addTo(map), markers = {};
   var pmap = L.map("pickmap").setView([6.8, -74.8], 10), pl = layers(), pickMarker = null;
   pl.osm.addTo(pmap); L.control.layers({ "Calles": pl.osm, "Satélite": pl.sat }, null, { position: "topright" }).addTo(pmap);

@@ -47,6 +47,9 @@ La decisión 7 pide coordenadas, fecha y hora. La coordenada es obligatoria. La 
 ### Taxón "sin identificar"
 "Ave sin identificar" o "*Micrurus* sp." son taxones con `rango` distinto de especie (clase, orden, género). Así un registro siempre apunta a algo, y los conteos por especie los pueden excluir.
 
+### Taxonomía de referencia
+`taxon.nombre_cientifico` sigue la UICN (decisión 24). Los demás nombres (el de la Resolución 0126, el de la base del piloto, nombres antiguos) van en `taxon_sinonimo` y sirven para cruzar y buscar. Pendiente de Rubén: el tití gris y los nombres de aves, que en sus inventarios siguen otro criterio.
+
 ### Categorías de amenaza
 `taxon.uicn` (con fecha de consulta y enlace) y `taxon.nacional` (Resolución 0126 de 2024). Como la resolución usa a veces otro nombre, se guarda `nombre_en_res_0126`. Caso ya encontrado: el tití gris está en la base como *Oedipomidas leucopus* y en la resolución como *Saguinus leucopus* (VU). Un taxón es "amenazado" si es CR, EN o VU en cualquiera de las dos listas. NT no cuenta como amenazado.
 

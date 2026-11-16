@@ -38,7 +38,7 @@ create table fuente (
 -- ---------------------------------------------------------------------------
 create table taxon (
   id                  integer generated always as identity primary key,
-  nombre_cientifico   text not null unique,          -- nombre vigente que usa el proyecto
+  nombre_cientifico   text not null unique,          -- nombre según la UICN (decisión 24)
   rango               text not null default 'especie', -- especie, genero, familia, orden, clase (para "sin identificar")
   nombre_comun        text,
   grupo               text not null,                 -- Ave, Mamífero, Reptil, Anfibio, Invertebrado, Doméstico
@@ -56,6 +56,14 @@ create table taxon (
   -- Publicación de la ubicación. 0 = exacta. Decisión 8: hoy todo va en 0.
   difuminar_m         integer not null default 0 check (difuminar_m >= 0),
   notas               text
+);
+
+-- Nombres alternativos de un taxón (otros géneros, nombres antiguos, nombres de otras listas).
+-- El nombre base de taxon sigue la UICN (decisión 24); estos sirven para cruzar y para buscar.
+create table taxon_sinonimo (
+  nombre    text primary key,
+  taxon_id  integer not null references taxon(id) on delete cascade,
+  fuente    text                         -- 'Res. 0126', 'base del piloto', 'GBIF', ...
 );
 
 -- Un taxón es amenazado si lo es en cualquiera de las dos listas.

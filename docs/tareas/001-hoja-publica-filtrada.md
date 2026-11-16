@@ -19,8 +19,8 @@ depende: ninguna
    - **La vía:** `Unidad funcional`, `Concesión`, `Tramo de la concesión` y la **generación del proyecto** (4G, 5G u otra; o "no concesionada").
    - Solo se copian los registros con `Validado` = "Sí", así que esa columna no hace falta en la copia.
    - **Fuera:** `Reportante`, `Notas`, `Nombre original en el mapa`, `Fotos adicionales (Drive)`, `ID anterior`, `Municipio`, `Departamento`.
-   - **Por confirmar con Rubén:** `Estructura más cercana` y `Distancia a estructura (m)`. No las nombró; mientras tanto quedan fuera y la ficha de la página no las muestra.
-   - **La observación pública no es la columna `Notas`.** Es una columna nueva en la hoja maestra, que Rubén llena a mano solo en los registros donde quiera contar algo. `Notas` sigue siendo interna.
+   - **También van, con forma de mostrarse por definir (decisión 22):** `Estructura más cercana` y `Distancia a estructura (m)`. Rubén quiere publicarlas, pero la manera de presentarlas tiene que ser información útil para quien lee el mapa, no solo dos datos sueltos. Mientras se define, la copia pública las incluye y la ficha puede mostrarlas de forma sencilla.
+   - **La observación pública no es la columna `Notas`.** Es una columna nueva en la hoja maestra, que Rubén llena a mano solo en los registros donde quiera contar algo que ayude a entender el registro (por ejemplo, si el animal iba con cría o si había un paso de fauna a pocos metros). `Notas` sigue siendo interna y nunca se publica.
    - **La generación del proyecto es un dato de la concesión, no de cada registro.** Va en una tabla corta (concesión → generación, con la fuente), y la copia pública la trae de ahí. Tomarla del contrato o de la ficha del proyecto en la ANI, no de memoria.
 2. Crear la hoja pública, que copia solo esas columnas de la maestra. Una copia programada con Apps Script es más segura que `IMPORTRANGE`, porque no deja un enlace vivo a la maestra.
 3. Cambiar `SHEET` en `index.html` por el ID de la hoja pública.

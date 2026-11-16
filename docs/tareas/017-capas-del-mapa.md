@@ -18,5 +18,6 @@ depende: 001
 4. Conectividad: retirar la imagen actual o dejarla con un aviso más visible hasta que haya capas propias. Decide Rubén.
 5. Aviso antes de mostrar fotos fuertes, con opción de verlas.
 6. Corregir los textos de la página que ya no corresponden al objetivo (decisión 4).
+7. **Estructura más cercana (decisión 22):** diseñar con Rubén cómo se muestra en la ficha de cada registro para que sirva de algo. Opciones a probar: tipo de paso y distancia dicha en palabras; aviso cuando el paso más cercano es solo solicitado y no existe; indicar si el registro cae dentro de cierto radio de un paso. Probar con diez registros reales antes de generalizar.
 
 **Hecho cuando.** Las tres capas se prenden y apagan; el número de pasos dibujados coincide con la base; ninguna foto fuerte aparece sin aviso; la capa del ocelote quedó como Rubén decidió.

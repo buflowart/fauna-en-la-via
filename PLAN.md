@@ -133,8 +133,9 @@ La lleva Nordeste Salvaje con sus propios documentos y **no se planea en este re
 
 | Decisión | Quién | Para cuándo |
 |---|---|---|
-| Qué columnas de la hoja se publican | Rubén | Decidido el 16 nov 2026 (decisiones 19 y 21). Falta confirmar si va la estructura más cercana |
+| Qué columnas de la hoja se publican | Rubén | Decidido el 16 nov 2026 (decisiones 19, 21 y 22). Falta definir cómo se muestra la estructura más cercana |
 | Con qué literatura se define el método de hotspots | Rubén | Sin fecha |
+| Cómo se presenta la estructura más cercana para que sea útil | Rubén, con Alejandro | Con la tarea 017 |
 | Licencia de datos y de fotos | Rubén, consultando a Alejandro | 15 dic 2026 |
 | Arquitectura inicial (propuesta en `docs/ESCALA.md`) | Alejandro, con visto bueno de Rubén | 15 dic 2026 |
 | Nombre y dueños de la organización en GitHub | Rubén y Alejandro | 30 nov 2026 |

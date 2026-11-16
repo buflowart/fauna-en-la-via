@@ -70,7 +70,7 @@ Ver `docs/ESCALA.md`. En corto: se empieza gratis, con base PostgreSQL/PostGIS y
 1. **Decir lo que los datos permiten.** Son registros reportados y oportunistas: sirven para decir dónde y qué se ha encontrado, no cuántos animales mueren ni qué tramo es peor por kilómetro.
 2. **Registrar el esfuerzo** (tarea 010): cada recorrido se anota aunque no se encuentre nada (fecha, tramo, quién, cómo). Es lo más barato que se puede hacer hoy y lo que más cambia lo que se podrá afirmar.
 3. **Un tramo con protocolo** (tarea 011): un recorrido periódico en un tramo corto, según la guía de MinAmbiente, para tener una tasa defendible aunque sea en un solo sitio.
-4. **Hotspots** (tarea 012): método publicable sobre la vía como línea (KDE+ o Siriema), con los registros ubicados por PR y corregidos por esfuerzo donde lo haya.
+4. **Hotspots** (tarea 012): método publicable sobre la vía como línea, con los registros ubicados por PR y corregidos por esfuerzo donde lo haya. **El método está por definir**: hay un borrador en `docs/METODO_HOTSPOTS.md`, pendiente de sustentarlo con literatura (decisión 20).
 5. **Persistencia de carcasas:** un cuerpo puede durar más de una semana en la vía. Dos fotos de la misma especie en el mismo punto pueden ser el mismo animal; se revisa caso a caso antes de contar dos.
 6. **Conectividad:** corredores de menor costo con capas propias, validados en terreno. Después de los hotspots.
 
@@ -133,7 +133,8 @@ La lleva Nordeste Salvaje con sus propios documentos y **no se planea en este re
 
 | Decisión | Quién | Para cuándo |
 |---|---|---|
-| Qué columnas de la hoja se publican | Rubén | 23 nov 2026 |
+| Qué columnas de la hoja se publican | Rubén | Decidido el 16 nov 2026 (decisión 19). Falta confirmar el `ID` |
+| Con qué literatura se define el método de hotspots | Rubén | Sin fecha |
 | Licencia de datos y de fotos | Rubén, consultando a Alejandro | 15 dic 2026 |
 | Arquitectura inicial (propuesta en `docs/ESCALA.md`) | Alejandro, con visto bueno de Rubén | 15 dic 2026 |
 | Nombre y dueños de la organización en GitHub | Rubén y Alejandro | 30 nov 2026 |

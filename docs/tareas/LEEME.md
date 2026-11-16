@@ -26,7 +26,7 @@ Para subirlas como issues de GitHub: `bash docs/tareas/crear_issues.sh` (una sol
 | 009 | [Fuentes externas y PR](009-fuentes-externas-y-pr.md) | Portal | M | Alejandro | 003 |
 | 011 | [Protocolo en un tramo](011-protocolo-en-un-tramo.md) | Ciencia | M | Rubén | 010 |
 | 016 | [Darwin Core e iNaturalist](016-darwin-core-e-inaturalist.md) | Portal | M | Alejandro | 003, 005 |
-| 012 | [Hotspots](012-hotspots.md) | Ciencia | L | Alejandro | 009, 010 |
+| 012 | [Hotspots](012-hotspots.md) (en pausa: falta literatura) | Ciencia | L | Alejandro | 009, 010 |
 
 ## Las tres primeras
 

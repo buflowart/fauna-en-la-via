@@ -1,5 +1,7 @@
 # Método para identificar hotspots con registros oportunistas
 
+> **Borrador pendiente de literatura (decisión 20, 16 nov 2026).** Rubén decidió no dar por definido este método hasta conseguir literatura que diga cómo hacerlo. Lo que sigue es un punto de partida para esa lectura, no el método del proyecto. **No se aplica ni se cita como método hasta entonces.** Lo que la literatura tiene que resolver está en la sección 14.
+
 Versión 0.1, 16 nov 2026. Propuesta de Fable 5.2 para el diseño de las tareas 010, 011 y 012. Es un diseño, no un resultado: los números de la sección 2 son una exploración para entender los datos, no un análisis de hotspots.
 
 ## 1. El problema, en una frase
@@ -160,3 +162,14 @@ Cambian la interpretación y solo él las puede contestar:
 | Teixeira, F. Z. et al. (2013). Estimación de mortalidad de vertebrados: efecto del método de muestreo y de la remoción de carcasas. Biological Conservation | **Sin verificar.** Citada de memoria |
 | Comparación de ciencia ciudadana y patrullas en una autopista de Sudáfrica (Frontiers in Ecology and Evolution, 2018, DOI 10.3389/fevo.2018.00015) | Vista solo en resumen. Concluye que los reportes ciudadanos sirven para patrones generales y zonas de riesgo. Leerla completa |
 | Guía de pasos de fauna de MinAmbiente (versión 2025) | Citada desde `reports/`. Leer el texto antes de escribir el protocolo |
+
+## 14. Lo que la literatura tiene que resolver
+
+Preguntas concretas para la búsqueda. Cuando haya respuesta con fuente, se reescriben las secciones 6, 7 y 8.
+
+1. **Método para hotspots sobre una vía:** qué se usa y se acepta en ecología de carreteras (KDE+, Siriema, otros), con qué parámetros y con cuántos registros como mínimo.
+2. **Datos oportunistas o de ciencia ciudadana:** cómo se han usado para identificar hotspots de atropellamiento y cómo se corrige o se declara el sesgo de esfuerzo. ¿Alguien compara contra el esfuerzo en vez de contra un reparto uniforme?
+3. **Comparaciones directas** entre reportes ciudadanos y muestreos sistemáticos en la misma vía: en qué coinciden y en qué no.
+4. **Persistencia y detección de carcasas en el trópico**, por tamaño y por grupo. Los datos conocidos son de Portugal y Brasil.
+5. **Qué pide la Guía de pasos de fauna de MinAmbiente (2025)** y qué método usa Recosfa, para que los resultados sean comparables con los suyos.
+6. **De hotspot a prioridad de intervención:** cómo priorizan otros proyectos dónde poner un paso de fauna.

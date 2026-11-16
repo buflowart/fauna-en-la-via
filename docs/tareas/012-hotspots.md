@@ -7,7 +7,7 @@ depende: 009, 010
 ---
 # 012 — Análisis de hotspots con método publicable
 
-> **Avance (16 nov 2026):** el diseño del método está en `docs/METODO_HOTSPOTS.md`. Esta tarea lo ejecuta. Antes hay que tener el eje de la vía y los PR, y las respuestas de Rubén a las preguntas de la sección 12.
+> **En pausa (16 nov 2026, decisión 20):** hay un borrador en `docs/METODO_HOTSPOTS.md`, pero el método no está definido. Primero hay que conseguir literatura que responda las preguntas de su sección 14 y reescribirlo con ella. Después: el eje de la vía, los PR y las respuestas de Rubén a la sección 12.
 
 **Objetivo.** Identificar los tramos con concentración de registros mayor a la esperada por azar, de forma reproducible y diciendo con claridad qué se puede concluir.
 

@@ -16,6 +16,7 @@ depende: ninguna
 **Pasos.**
 1. **Lista blanca de columnas, decidida por Rubén el 16 nov 2026:**
    - **El registro:** `ID`, `Especie` (con `Nombre común`), `Grupo` (da el color), `Fecha`, `Hora`, `Latitud`, `Longitud`, `Foto (URL)` y una **observación pública** cuando haya algo relevante que contar.
+   - **El grado de amenaza (decisión 23):** `Categoría UICN` (global) y `Categoría MADS` (Resolución 0126 de 2024, nacional) de la especie. **No existen en la hoja maestra**: salen de la tabla de especies de la tarea 004 y la copia pública las agrega por nombre de especie. Cuando una lista no incluye la especie se escribe "No evaluada" o "No listada", nunca se deja en blanco.
    - **La vía:** `Unidad funcional`, `Concesión`, `Tramo de la concesión` y la **generación del proyecto** (4G, 5G u otra; o "no concesionada").
    - Solo se copian los registros con `Validado` = "Sí", así que esa columna no hace falta en la copia.
    - **Fuera:** `Reportante`, `Notas`, `Nombre original en el mapa`, `Fotos adicionales (Drive)`, `ID anterior`, `Municipio`, `Departamento`.
@@ -31,6 +32,7 @@ depende: ninguna
 - `curl` sin credenciales a la hoja maestra ya no devuelve datos.
 - `curl` a la hoja pública devuelve solo las columnas de la lista blanca, y solo registros validados.
 - La página no muestra errores por las columnas que ya no llegan.
+- Cada registro de una especie amenazada trae su categoría. Se comprueba con cinco especies contra la ficha de la UICN y el anexo de la resolución.
 - La página publicada muestra el mismo número de registros que la hoja maestra tiene con `Validado` = "Sí".
 - En la pestaña de red del navegador no aparece el ID de la hoja maestra.
 

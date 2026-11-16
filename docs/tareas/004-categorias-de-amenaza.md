@@ -21,7 +21,8 @@ depende: ninguna
 3. Armar `especies.csv` con las especies de la base: nombre científico, nombre común, grupo, categoría UICN (con fecha de consulta y enlace a la ficha) y categoría nacional.
 4. Para la UICN, consultar la Lista Roja especie por especie o por su API. Revisar antes sus condiciones de uso.
 5. Cruzar por nombre científico. **Los nombres que no crucen no se corrigen: se listan para Rubén** (sinónimos, cambios de género).
-6. En el mapa: distintivo visible para CR, EN y VU (nacional o global) y filtro "Solo amenazadas".
+6. Dejar las dos categorías en una columna propia cada una (`Categoría UICN`, `Categoría MADS`), porque la copia pública de la tarea 001 las muestra en la ficha de cada registro (decisión 23).
+7. En el mapa: distintivo visible para CR, EN y VU (nacional o global) y filtro "Solo amenazadas".
 
 **Hecho cuando.**
 - Todas las especies de la base tienen las dos categorías o un "sin evaluar" explícito.

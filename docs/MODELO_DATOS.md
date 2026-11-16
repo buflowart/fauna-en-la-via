@@ -83,6 +83,7 @@ Se guarda la **ruta** del objeto, no la URL del proveedor: cambiar de almacenami
 | Foto (URL), Fotos adicionales (Drive) | `foto.url_externa`, con `orden` |
 | Notas | `registro.nota_interna`. Lo que se quiera mostrar se pasa a mano a `nota_publica` |
 | Nombre original en el mapa | `identificacion` con origen `fuente` |
+| Categoría de amenaza (UICN y MADS), dato nuevo | `taxon.uicn` y `taxon.nacional`; la vista pública los entrega como `uicn` y `nacional` |
 | Estructura más cercana, Distancia a estructura (m) | Se recalculan; los valores de la hoja sirven para comprobar |
 | Unidad funcional, Concesión, Tramo de la concesión | `tramo`, `via` |
 | Generación del proyecto (4G, 5G…), dato nuevo | `via.generacion`, con su fuente. Es de la concesión, no de cada registro |

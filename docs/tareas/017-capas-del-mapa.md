@@ -18,6 +18,7 @@ depende: 001
 4. Conectividad: retirar la imagen actual o dejarla con un aviso más visible hasta que haya capas propias. Decide Rubén.
 5. Aviso antes de mostrar fotos fuertes, con opción de verlas.
 6. Corregir los textos de la página que ya no corresponden al objetivo (decisión 4).
-7. **Estructura más cercana (decisión 22):** diseñar con Rubén cómo se muestra en la ficha de cada registro para que sirva de algo. Opciones a probar: tipo de paso y distancia dicha en palabras; aviso cuando el paso más cercano es solo solicitado y no existe; indicar si el registro cae dentro de cierto radio de un paso. Probar con diez registros reales antes de generalizar.
+7. **Grado de amenaza (decisión 23):** la ficha muestra la categoría de la UICN y la del MADS, cada una con su sigla y su nombre completo (por ejemplo, VU: Vulnerable) y la fuente. Las especies CR, EN o VU en cualquiera de las dos listas llevan el distintivo; NT se muestra con otro. La ficha dice cuál lista es cuál: la UICN es global y la del MADS (Resolución 0126 de 2024) es la oficial de Colombia.
+8. **Estructura más cercana (decisión 22):** diseñar con Rubén cómo se muestra en la ficha de cada registro para que sirva de algo. Opciones a probar: tipo de paso y distancia dicha en palabras; aviso cuando el paso más cercano es solo solicitado y no existe; indicar si el registro cae dentro de cierto radio de un paso. Probar con diez registros reales antes de generalizar.
 
 **Hecho cuando.** Las tres capas se prenden y apagan; el número de pasos dibujados coincide con la base; ninguna foto fuerte aparece sin aviso; la capa del ocelote quedó como Rubén decidió.

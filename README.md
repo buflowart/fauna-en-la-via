@@ -1,5 +1,7 @@
 # Fauna en la Vía
 
+Plataforma de ciencia ciudadana para registrar fauna atropellada en las vías de Colombia. Proyecto de Nordeste Salvaje. El plan está en [`PLAN.md`](PLAN.md), las tareas en [`docs/tareas/`](docs/tareas/LEEME.md) y las reglas para quien entra a trabajar en [`CLAUDE.md`](CLAUDE.md).
+
 Prototipo de un mapa de fauna atropellada en Colombia. Lee en vivo una hoja de Google con los registros (coordenadas, especie, foto en Drive) y los muestra sobre OpenStreetMap, con vista satelital.
 
 Es una sola página (`index.html`), sin servidor. Para verla en local:

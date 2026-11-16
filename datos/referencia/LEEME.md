@@ -17,6 +17,8 @@ El cruce con la base **no se puede hacer solo por nombre científico exacto**. E
 |---|---|---|
 | *Oedipomidas leucopus* (tití gris) | *Saguinus leucopus* | VU |
 
+La UICN sí usa *Oedipomidas leucopus* (antes *Saguinus leucopus*; VU A4cd, evaluada en 2020, publicada en 2021), según su ficha consultada el 16 nov 2026. El nombre base del proyecto es el de la UICN, y el de la resolución va como sinónimo.
+
 La lista usa el nombre con que se expidió la resolución. Cada especie de la plataforma debe guardar, además de su nombre vigente, **el nombre con que aparece en la resolución**. Los cruces dudosos los decide Rubén.
 
 Falta (tarea 004): el PDF de la resolución, la tabla `especies.csv` con las dos categorías para cada especie de la base, y la categoría de la UICN.

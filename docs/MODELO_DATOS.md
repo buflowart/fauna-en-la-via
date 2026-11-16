@@ -48,10 +48,10 @@ La decisión 7 pide coordenadas, fecha y hora. La coordenada es obligatoria. La 
 "Ave sin identificar" o "*Micrurus* sp." son taxones con `rango` distinto de especie (clase, orden, género). Así un registro siempre apunta a algo, y los conteos por especie los pueden excluir.
 
 ### Taxonomía de referencia
-`taxon.nombre_cientifico` sigue la UICN (decisión 24). Los demás nombres (el de la Resolución 0126, el de la base del piloto, nombres antiguos) van en `taxon_sinonimo` y sirven para cruzar y buscar. Pendiente de Rubén: el tití gris y los nombres de aves, que en sus inventarios siguen otro criterio.
+`taxon.nombre_cientifico` sigue la UICN (decisión 24). Los demás nombres (el de la Resolución 0126, el de la base del piloto, nombres antiguos) van en `taxon_sinonimo` y sirven para cruzar y buscar. El tití gris cuadra: la UICN usa *Oedipomidas leucopus* y *Saguinus leucopus*, que sigue el MADS, queda como sinónimo. Pendiente de Rubén: los nombres de aves, que en sus inventarios siguen la guía de Ayerbe.
 
 ### Categorías de amenaza
-`taxon.uicn` (con fecha de consulta y enlace) y `taxon.nacional` (Resolución 0126 de 2024). Como la resolución usa a veces otro nombre, se guarda `nombre_en_res_0126`. Caso ya encontrado: el tití gris está en la base como *Oedipomidas leucopus* y en la resolución como *Saguinus leucopus* (VU). Un taxón es "amenazado" si es CR, EN o VU en cualquiera de las dos listas. NT no cuenta como amenazado.
+`taxon.uicn` (con fecha de consulta y enlace) y `taxon.nacional` (Resolución 0126 de 2024). Como la resolución usa a veces otro nombre, se guarda `nombre_en_res_0126`. Caso ya encontrado: el tití gris está en la base y en la UICN como *Oedipomidas leucopus* y en la resolución como *Saguinus leucopus* (VU). Un taxón es "amenazado" si es CR, EN o VU en cualquiera de las dos listas. NT no cuenta como amenazado.
 
 ### Quien reporta
 `persona` guarda nombre y contacto solo si los dio. El crédito público depende de `credito_publico`, que es falso por defecto (decisión 9). Las vistas públicas solo muestran `nombre_credito` cuando hay permiso.

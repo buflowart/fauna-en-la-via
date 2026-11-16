@@ -7,7 +7,7 @@ depende: ninguna
 ---
 # 004 — Categorías de amenaza: UICN y Resolución 0126 de 2024
 
-> **Avance (16 nov 2026):** la lista de la resolución ya está en `datos/referencia/amenazadas-mads-0126-2024.csv` (2.104 taxones), con su fuente y licencia en `datos/referencia/LEEME.md`. El cruce por nombre exacto no sirve: el tití gris está en la base como *Oedipomidas leucopus* y en la resolución como *Saguinus leucopus* (VU). Faltan el PDF, la UICN y la tabla `especies.csv`.
+> **Avance (16 nov 2026):** la lista de la resolución ya está en `datos/referencia/amenazadas-mads-0126-2024.csv` (2.104 taxones), con su fuente y licencia en `datos/referencia/LEEME.md`. El cruce por nombre exacto no sirve: el tití gris está en la base y en la UICN como *Oedipomidas leucopus* y en la resolución como *Saguinus leucopus* (VU). Faltan el PDF, la UICN y la tabla `especies.csv`.
 
 **Objetivo.** Que cada especie de la base tenga su categoría global (UICN) y nacional (MinAmbiente), y que el mapa resalte siempre las amenazadas.
 
@@ -20,7 +20,7 @@ depende: ninguna
 2. Dejar las listas como CSV: nombre científico, grupo, categoría. Sin corregir nombres.
 3. Armar `especies.csv` con las especies de la base: nombre científico, nombre común, grupo, categoría UICN (con fecha de consulta y enlace a la ficha) y categoría nacional.
 4. Para la UICN, consultar la Lista Roja especie por especie o por su API. Revisar antes sus condiciones de uso.
-5. Cruzar tomando como base la taxonomía de la UICN (decisión 24). Cuando un nombre no cruce, buscarlo como sinónimo (en la propia UICN, GBIF o el campo de comentarios de la lista del MADS) y guardarlo en la tabla de sinónimos del modelo de datos. **No se cambia el nombre base de ninguna especie por cuenta propia: los casos dudosos se listan para Rubén.** Caso conocido: el tití gris.
+5. Cruzar tomando como base la taxonomía de la UICN (decisión 24). Cuando un nombre no cruce, buscarlo como sinónimo (en la propia UICN, GBIF o el campo de comentarios de la lista del MADS) y guardarlo en la tabla de sinónimos del modelo de datos. **No se cambia el nombre base de ninguna especie por cuenta propia: los casos dudosos se listan para Rubén.** Caso conocido: el tití gris, que la UICN tiene como *Oedipomidas leucopus* (antes *Saguinus leucopus*) y el listado del MADS aún como *Saguinus leucopus*; el nombre base es el de la UICN y *Saguinus leucopus* va como sinónimo.
 6. Dejar las dos categorías en una columna propia cada una (`Categoría UICN`, `Categoría MADS`), porque la copia pública de la tarea 001 las muestra en la ficha de cada registro (decisión 23).
 7. En el mapa: distintivo visible para CR, EN y VU (nacional o global) y filtro "Solo amenazadas".
 

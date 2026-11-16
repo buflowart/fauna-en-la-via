@@ -14,10 +14,14 @@ depende: ninguna
 **Archivos.** `index.html`; una hoja de Google nueva ("Fauna en la Vía — datos públicos"); un script de Apps Script en esa hoja.
 
 **Pasos.**
-1. **Lista blanca de columnas, decidida por Rubén el 16 nov 2026:** `Especie` (con `Nombre común`), `Grupo` (da el color), `Fecha`, `Hora`, `Latitud`, `Longitud`, `Foto (URL)` y una **observación pública** cuando haya algo relevante que contar. Además va el `ID`, como clave técnica para enlazar cada punto con su foto y su ficha (Rubén no lo nombró: confirmarlo con él). Solo se copian los registros con `Validado` = "Sí", así que esa columna no hace falta en la copia.
-   - **Fuera:** `Reportante`, `Notas`, `Nombre original en el mapa`, `Fotos adicionales (Drive)`, `ID anterior`, `Estructura más cercana`, `Distancia a estructura (m)`, `Unidad funcional`, `Concesión`, `Tramo de la concesión`, `Municipio`, `Departamento`.
+1. **Lista blanca de columnas, decidida por Rubén el 16 nov 2026:**
+   - **El registro:** `ID`, `Especie` (con `Nombre común`), `Grupo` (da el color), `Fecha`, `Hora`, `Latitud`, `Longitud`, `Foto (URL)` y una **observación pública** cuando haya algo relevante que contar.
+   - **La vía:** `Unidad funcional`, `Concesión`, `Tramo de la concesión` y la **generación del proyecto** (4G, 5G u otra; o "no concesionada").
+   - Solo se copian los registros con `Validado` = "Sí", así que esa columna no hace falta en la copia.
+   - **Fuera:** `Reportante`, `Notas`, `Nombre original en el mapa`, `Fotos adicionales (Drive)`, `ID anterior`, `Municipio`, `Departamento`.
+   - **Por confirmar con Rubén:** `Estructura más cercana` y `Distancia a estructura (m)`. No las nombró; mientras tanto quedan fuera y la ficha de la página no las muestra.
    - **La observación pública no es la columna `Notas`.** Es una columna nueva en la hoja maestra, que Rubén llena a mano solo en los registros donde quiera contar algo. `Notas` sigue siendo interna.
-   - **Consecuencia en la página:** el panel "Tramos con más registros" usa `Unidad funcional`, y la ficha muestra la estructura más cercana. Sin esas columnas hay que quitar esas dos partes de `index.html` o calcular el tramo a partir de las coordenadas.
+   - **La generación del proyecto es un dato de la concesión, no de cada registro.** Va en una tabla corta (concesión → generación, con la fuente), y la copia pública la trae de ahí. Tomarla del contrato o de la ficha del proyecto en la ANI, no de memoria.
 2. Crear la hoja pública, que copia solo esas columnas de la maestra. Una copia programada con Apps Script es más segura que `IMPORTRANGE`, porque no deja un enlace vivo a la maestra.
 3. Cambiar `SHEET` en `index.html` por el ID de la hoja pública.
 4. Rubén quita el acceso por enlace a la hoja maestra. **Solo él cambia permisos.**

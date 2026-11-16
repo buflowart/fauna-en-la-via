@@ -88,6 +88,8 @@ create table via (
   codigo      text,                      -- código de ruta, si lo tiene
   concesion   text,                      -- nulo si no es concesionada
   sigla       text,                      -- 'ARM', 'VDN', 'ADN'; 'VR' para vía rural
+  generacion  text,                      -- generación de la concesión: '4G', '5G', ...; nulo si no es concesionada
+  generacion_fuente text,                -- de dónde salió el dato (contrato, ficha de la ANI)
   geom        geometry(MultiLineString, 4326)
 );
 
@@ -313,6 +315,7 @@ select
   f.nombre             as fuente,
   v.nombre             as via,
   v.concesion,
+  v.generacion,
   tr.nombre            as tramo,
   r.pr_km, r.pr_m,
   r.municipio, r.departamento,

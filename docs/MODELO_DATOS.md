@@ -85,6 +85,7 @@ Se guarda la **ruta** del objeto, no la URL del proveedor: cambiar de almacenami
 | Nombre original en el mapa | `identificacion` con origen `fuente` |
 | Estructura más cercana, Distancia a estructura (m) | Se recalculan; los valores de la hoja sirven para comprobar |
 | Unidad funcional, Concesión, Tramo de la concesión | `tramo`, `via` |
+| Generación del proyecto (4G, 5G…), dato nuevo | `via.generacion`, con su fuente. Es de la concesión, no de cada registro |
 | Municipio, Departamento | `registro.municipio`, `registro.departamento` |
 | Toda la fila | `registro.datos_origen`, tal como estaba |
 

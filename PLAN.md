@@ -133,7 +133,7 @@ La lleva Nordeste Salvaje con sus propios documentos y **no se planea en este re
 
 | Decisión | Quién | Para cuándo |
 |---|---|---|
-| Qué columnas de la hoja se publican | Rubén | Decidido el 16 nov 2026 (decisión 19). Falta confirmar el `ID` |
+| Qué columnas de la hoja se publican | Rubén | Decidido el 16 nov 2026 (decisiones 19 y 21). Falta confirmar si va la estructura más cercana |
 | Con qué literatura se define el método de hotspots | Rubén | Sin fecha |
 | Licencia de datos y de fotos | Rubén, consultando a Alejandro | 15 dic 2026 |
 | Arquitectura inicial (propuesta en `docs/ESCALA.md`) | Alejandro, con visto bueno de Rubén | 15 dic 2026 |

@@ -4,6 +4,21 @@ Resumen para cualquier persona o agente que entra al proyecto sin historia. Lo e
 de las sesiones de trabajo del 9 y el 12 de noviembre de 2026. Lo que dice acá es **memoria de esas sesiones**:
 verificalo contra el repo y la hoja antes de usarlo como dato.
 
+## Correcciones del 16 nov 2026 (leer primero)
+
+Este documento es la memoria de las sesiones del 9 y el 12 de noviembre. Varias cosas cambiaron o estaban equivocadas. Donde este documento y `PLAN.md` no coincidan, vale `PLAN.md`.
+
+- **Rubén es ingeniero forestal**, no agrónomo, e identifica especies desde su formación. Para el aval científico se buscan expertos por grupo taxonómico.
+- **El proyecto es de Nordeste Salvaje** (Yalí, Antioquia), que está por constituirse como corporación. No es cierto que no haya organización: la hay y la personería está en trámite. Rubén es el dueño; Alejandro, cocreador con la parte técnica.
+- **Objetivo de fondo:** identificar hotspots para priorizar las zonas que hay que atender, con pasos de fauna y otras adecuaciones. No es solo "conseguir pasos de fauna".
+- **Vía legal:** Rubén ya es tercero interviniente en el expediente LAV0017-00-2016 y ya hay peticiones en curso ante varias entidades. Lo que aquí y en `reports/` aparece como "primer paso" ya está hecho. Este frente no se planea en el repositorio, que es público.
+- **Datos (medidos el 16 nov 2026):** 106 registros, todos con coordenadas; 105 validados; 58 especies; 85 con foto. Las cifras de abajo (102, 101, 94, 52, 81) eran de antes.
+- **La hoja se puede descargar completa sin iniciar sesión**, incluidos nombres de reportantes y notas internas. Corregirlo es la tarea 001.
+- **Capa del ocelote:** es la previsualización de un PDF. Hay que alimentarla con capas generadas con SIG o retirarla. El estudio del que salió es de la Universidad Nacional y no es central para el proyecto.
+- **Vienen datos** de tres concesiones (Autopista Río Magdalena 2, Vías del Nus y Autopistas del Nordeste) y las coordenadas de todos los PR.
+- **Redes:** además de Recosfa, iNaturalist y SiB/GBIF, existen Sukubun (INVÍAS) y BioANI (ANI). Con Recosfa la relación ya empezó. Ver `docs/REDES.md`.
+- **El ocelote** deja de ser el centro: el proyecto es de toda la fauna. Las especies amenazadas se resaltan según la UICN y la Resolución 0126 de 2024 de MinAmbiente.
+
 ## Quiénes
 
 - **Rubén** — ingeniero agrónomo, dueño del proyecto. Datos, terreno, contactos.

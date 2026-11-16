@@ -17,27 +17,31 @@ Plataforma **nacional** de ciencia ciudadana para registrar **fauna atropellada 
 persona que vea un animal muerto en una vía lo reporta desde el navegador del celular (foto + ubicación + lo que
 sepa), sin instalar nada: **el portal principal es una página web**, no una app, porque nadie descarga una app para
 algo que le pasa de vez en cuando. Los reportes los validan biólogos y alimentan un mapa público y datos abiertos.
-Objetivo de fondo: **conseguir pasos de fauna** y reducir la mortalidad, con datos georreferenciados que sirvan como
+Objetivo de fondo: 
+Identificar hotspots de atropellamientos para identificar zonas que requieren ser atendidas con prioridad, como conseguir pasos de fauna y generar adecuaciones para reducir la mortalidad, con datos georreferenciados que sirvan como
 prueba ante las autoridades (ANLA, corporaciones autónomas), los concesionarios y los fondos.
+Que esto se convierta en una herramienta de libre acceso para que cualquier persona pueda interactuar y aprender sobre los distintos impactos de las carreteras y otras dinámicas que alteran la conectividad. Que cualquier persona pueda acceder a los datos, registros. 
 
 **Piloto:** la Autopista al Río Magdalena 2, UF1–UF2 (Remedios, Vegachí, Yalí, Yolombó, Maceo; Antioquia). Es donde
 ya hay datos, terreno y un caso legal concreto. El plan tiene que mostrar cómo se pasa del piloto al país sin rehacer
 todo.
+Proximamente llegaran datos de las concesiones de Vías del Nus, ARM y Autopistas del nordeste.
+Además tendremos las coordenadas de todos los PR, estos solo servirán para dar resultados de las ubicaciones con las coordenadas para cuando tengamos la información de los pasos de fauna.
 
 **Lo primero que tenés que resolver:** ya existen esfuerzos nacionales e internacionales parecidos (Recosfa / Red
-Colombiana de Seguimiento de Fauna Atropellada, iNaturalist, SiB Colombia / GBIF, entre otros). Investigá qué hace
+Colombiana de Seguimiento de Fauna Atropellada, BioANI, sukubun, mapa de vulnerabilidad faunistica de invias, iNaturalist, SiB Colombia / GBIF, entre otros). Investigá qué hace
 cada uno, qué datos tienen y cómo se puede publicar en ellos. Recomendá con argumentos si conviene **competir,
 complementar o aliarse** (por ejemplo: nuestro portal capta y valida, y exporta en estándar Darwin Core a SiB/GBIF).
 Un proyecto chico que duplica una red existente pierde aliados y fondos.
 
 Equipo (los dos tienen GitHub):
-- **Rubén** (quien te está hablando), **ingeniero agrónomo**: dueño del proyecto, conoce la zona, el territorio y los datos; hace terreno. No es biólogo: para identificar especies y dar aval científico el plan tiene que prever aliados (biólogos, universidades).
+- **Rubén** (quien te está hablando), **ingeniero Forestal con enfoque en aves y mamíferos**: Lider de la iniciativa Nordeste Salvaje, dueño del proyecto, conoce la zona, el territorio y los datos; hace terreno. Puedo identificar especies desde mi formación: para identificar especies y dar aval científico el plan tiene que prever aliados (biólogos expertos en cada grupo, universidades).
 - **Alejandro**: le propuso a Rubén la idea de hacer esta plataforma y es cofundador; lleva la parte técnica (web, mapas, análisis, agentes de IA). Trabaja con Claude Code. Las decisiones del proyecto las toma Rubén como dueño, consultando a Alejandro.
 
 Lo que ya existe en este repo (leelo entero antes de opinar). **Empezá por `docs/CONTEXTO.md`**: resume todo lo que se
 hizo y se encontró en las sesiones anteriores, que vos no viste. Tu memoria y las notas de Rubén no saben nada de esto.
 - `index.html`: mapa Leaflet de una sola página que lee **en vivo** la hoja de Google de Rubén (gviz CSV).
-  102 registros (101 con coordenadas, 94 validados, 52 especies, 81 con foto en Drive). Capas: conectividad del ocelote
+  102 registros (101 con coordenadas, 94 validados, 52 especies, 81 con foto en Drive). Capas: conectividad del ocelote (ojo, esto es una previsualizacion de pdf, debemos alimentar esto con las capas generadas con SIG)
   (diapositiva de un estudio de Linkage Mapper, ubicada a mano, ilustrativa), bosque IDEAM 2025 (por defecto) y Hansen.
   Los botones Reportar y Validar **todavía no escriben** en ninguna parte.
 - `analisis/`: scripts de Python que generan las capas de bosque (`bosque_corredor.py`, `comparar_ideam.py`).
@@ -47,7 +51,7 @@ hizo y se encontró en las sesiones anteriores, que vos no viste. Tu memoria y l
 - `README.md` y `docs/TRABAJAR_JUNTOS.md` (cómo trabajan Rubén y Alejandro con GitHub).
 
 Hechos que no se negocian:
-- Los registros son fotos de Rubén y de conocidos: son **registros reportados, no el total de animales muertos**.
+- Los registros son fotos de Rubén y de conocidos o gente que realiza ciencia ciudadana: son **registros reportados, no el total de animales muertos**. 
   Hay sesgo de muestreo. Nunca presentarlos como mortalidad total.
 - Deforestación y obra de la vía **coinciden en el tiempo; eso no prueba causa**. Ninguna fuente de bosque da certeza.
 - El repo y la página fueron temporales en la cuenta `buflowart` (marca de Alejandro); el proyecto va a tener sus

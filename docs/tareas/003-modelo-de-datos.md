@@ -7,6 +7,8 @@ depende: 005 para cerrar; se puede empezar antes
 ---
 # 003 — Modelo de datos único
 
+> **Avance (16 nov 2026):** hay una propuesta completa en `docs/MODELO_DATOS.md` y `db/esquema.sql`. No se ha ejecutado. Lo que sigue es probarla con los criterios de la sección 8 de ese documento.
+
 **Objetivo.** Un esquema PostgreSQL/PostGIS que sirva para los registros de Nordeste Salvaje, los reportes ciudadanos y los datos de concesiones y otras redes, sin rehacerlo al pasar del piloto al país.
 
 **Contexto mínimo.** Hoy los datos viven en una hoja de Google con columnas pensadas para el piloto (unidad funcional, estructura más cercana). Decisiones que el modelo debe respetar: `docs/DECISIONES.md`, de la 7 a la 13. Arquitectura propuesta: `docs/ESCALA.md`.

@@ -21,6 +21,9 @@ Plataforma web de ciencia ciudadana para registrar fauna atropellada en las vía
 | `docs/DECISIONES.md` | Registro de decisiones |
 | `docs/REDES.md` | Relación con Recosfa, iNaturalist, SiB y las fuentes oficiales |
 | `docs/ESCALA.md` | Arquitectura por etapas y costos |
+| `docs/MODELO_DATOS.md`, `db/esquema.sql` | Propuesta de modelo de datos (sin ejecutar) |
+| `docs/METODO_HOTSPOTS.md` | Cómo identificar hotspots con datos oportunistas |
+| `datos/referencia/` | Lista de especies amenazadas de la Res. 0126 de 2024 |
 | `docs/CONTEXTO.md` | Historia de las primeras sesiones. Tiene partes desactualizadas, marcadas arriba |
 | `reports/`, `research_notes/` | Investigación de financiación del 12 nov 2026. Léela con las correcciones de `CONTEXTO.md` |
 

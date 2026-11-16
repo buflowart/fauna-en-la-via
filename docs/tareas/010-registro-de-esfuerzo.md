@@ -7,6 +7,8 @@ depende: 003 para la versión en la base; se puede empezar en una hoja
 ---
 # 010 — Registrar cada recorrido, aunque no se encuentre nada
 
+> Por qué importa y cómo se usa: `docs/METODO_HOTSPOTS.md`, secciones 3 y 7.
+
 **Objetivo.** Saber cuánto se ha buscado, dónde y cuándo. Sin eso, los registros no permiten comparar tramos ni épocas.
 
 **Contexto mínimo.** Hoy casi todos los registros son hallazgos oportunistas y no queda anotado cuándo se recorrió la vía sin encontrar nada. Es el dato más barato de recoger y el que más cambia lo que se puede afirmar.

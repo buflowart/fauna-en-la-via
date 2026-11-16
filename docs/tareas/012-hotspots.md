@@ -7,6 +7,8 @@ depende: 009, 010
 ---
 # 012 — Análisis de hotspots con método publicable
 
+> **Avance (16 nov 2026):** el diseño del método está en `docs/METODO_HOTSPOTS.md`. Esta tarea lo ejecuta. Antes hay que tener el eje de la vía y los PR, y las respuestas de Rubén a las preguntas de la sección 12.
+
 **Objetivo.** Identificar los tramos con concentración de registros mayor a la esperada por azar, de forma reproducible y diciendo con claridad qué se puede concluir.
 
 **Contexto mínimo.** Es el objetivo de fondo del proyecto. Los datos son oportunistas: un análisis ingenuo marca como hotspot el tramo por donde más se pasa. Métodos usados en la literatura: **KDE+** (densidad de núcleo sobre la red vial, con prueba de significancia y orden de los agrupamientos; kdeplus.cz) y **Siriema** (K de Ripley para la escala de agregación y análisis de hotspots sobre la línea). Leer la documentación y al menos un artículo de cada uno antes de elegir.

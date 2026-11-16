@@ -7,6 +7,8 @@ depende: ninguna
 ---
 # 004 — Categorías de amenaza: UICN y Resolución 0126 de 2024
 
+> **Avance (16 nov 2026):** la lista de la resolución ya está en `datos/referencia/amenazadas-mads-0126-2024.csv` (2.104 taxones), con su fuente y licencia en `datos/referencia/LEEME.md`. El cruce por nombre exacto no sirve: el tití gris está en la base como *Oedipomidas leucopus* y en la resolución como *Saguinus leucopus* (VU). Faltan el PDF, la UICN y la tabla `especies.csv`.
+
 **Objetivo.** Que cada especie de la base tenga su categoría global (UICN) y nacional (MinAmbiente), y que el mapa resalte siempre las amenazadas.
 
 **Contexto mínimo.** Decisión 11 de `docs/DECISIONES.md`. La Resolución 0126 de 2024 de MinAmbiente establece el listado oficial de especies silvestres amenazadas de Colombia (CR, EN, VU); reemplazó las resoluciones 1218 de 2003 y 1912 de 2017. Sus anexos están publicados en SiB Colombia. Fuentes en `docs/REDES.md`.

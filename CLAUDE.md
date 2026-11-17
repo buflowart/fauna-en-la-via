@@ -13,6 +13,7 @@ Plataforma web de ciencia ciudadana para registrar fauna atropellada en las vía
 | Ruta | Qué hay |
 |---|---|
 | `index.html` | El prototipo: una sola página con Leaflet. Mapa, Reportar y Validar (estos dos todavía no guardan) |
+| `reportar/` | Prototipo de Reportar con cola sin señal y recepción provisional en Apps Script. Ver `docs/PROTOTIPO_REPORTAR.md` |
 | `capas/` | Imágenes y datos de las capas del mapa (bosque IDEAM y Hansen, conectividad ilustrativa) |
 | `analisis/` | Scripts de Python que generan las capas de bosque |
 | `PLAN.md` | Plan maestro: visión, criterios de éxito, frentes, hitos, riesgos |

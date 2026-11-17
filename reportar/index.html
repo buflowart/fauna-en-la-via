@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fauna en la vía</title>
+<meta name="description" content="Reporte de fauna muerta, herida o viva en la vía. Nordeste Salvaje.">
+<meta name="theme-color" content="#2f5d3a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --fondo: #f4f1ea; --superficie: #ffffff; --texto: #1f2a22; --suave: #5b6b5f;
+    --marca: #2f5d3a; --marca-texto: #ffffff; --borde: #d9d3c4; --aviso: #fff3cd; --aviso-texto: #6b4e00;
+    --error: #a3261b; --ok: #2f7d43;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fondo: #141a16; --superficie: #1e2620; --texto: #e8ece6; --suave: #a3b0a6;
+      --marca: #6fae7e; --marca-texto: #0f1511; --borde: #344037; --aviso: #3a3216; --aviso-texto: #f2dc95;
+      --error: #ff8a7a; --ok: #7fd394;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--fondo); color: var(--texto);
+    font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .barra { display: flex; gap: 10px; align-items: center; padding: 12px 16px; background: var(--marca); color: var(--marca-texto); }
+  .barra div { display: flex; flex-direction: column; line-height: 1.15; }
+  .barra span { font-size: 13px; opacity: .85; }
+  main { max-width: 520px; margin: 0 auto; padding: 16px; }
+  h1, h2 { margin: 8px 0 12px; line-height: 1.2; }
+  h3 { margin: 0 0 4px; font-size: 15px; color: var(--suave); text-transform: uppercase; letter-spacing: .03em; }
+  label { display: block; margin: 14px 0 0; font-weight: 600; }
+  input, textarea {
+    display: block; width: 100%; margin-top: 6px; padding: 12px; font: inherit; color: var(--texto);
+    background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px;
+  }
+  button { font: inherit; cursor: pointer; }
+  .principal, .grande, .secundario { display: block; width: 100%; border-radius: 14px; border: 0; padding: 16px; margin-top: 14px; font-weight: 700; }
+  .principal, .grande { background: var(--marca); color: var(--marca-texto); }
+  .grande { padding: 34px 16px; font-size: 22px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .grande .icono { font-size: 46px; line-height: 1; }
+  .secundario { background: var(--superficie); color: var(--texto); border: 1px solid var(--borde); }
+  .enlace { background: none; border: 0; color: var(--marca); text-decoration: underline; padding: 8px 0; font-weight: 600; }
+  .ayuda, .fuente { color: var(--suave); font-size: 14px; margin: 6px 0 0; }
+  .fuente::before { content: "Dato tomado de: "; }
+  .fuente:empty { display: none; }
+  .aviso { background: var(--aviso); color: var(--aviso-texto); border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .aviso .enlace { color: inherit; }
+  .error { color: var(--error); font-weight: 600; }
+  .dato { background: var(--superficie); border: 1px solid var(--borde); border-radius: 12px; padding: 12px; margin-top: 14px; }
+  .dato p { margin: 0; overflow-wrap: anywhere; }
+  .fila { display: flex; gap: 8px; }
+  .fila input { margin-top: 0; min-width: 0; flex: 1; }
+  a { color: var(--marca); font-weight: 600; }
+  a.principal { color: var(--marca-texto); text-align: center; text-decoration: none; }
+  #caja-whatsapp { text-align: left; }
+  #caja-whatsapp ol { padding-left: 20px; margin: 8px 0 0; }
+  fieldset { border: 0; padding: 0; margin: 16px 0 0; }
+  legend { font-weight: 600; padding: 0; }
+  .chips { display: flex; gap: 8px; margin-top: 8px; }
+  .chips label { flex: 1; margin: 0; }
+  .chips input { position: absolute; opacity: 0; pointer-events: none; }
+  .chips span { display: block; text-align: center; padding: 12px 4px; border: 1px solid var(--borde); border-radius: 12px; background: var(--superficie); font-weight: 600; }
+  .chips input:checked + span { background: var(--marca); color: var(--marca-texto); border-color: var(--marca); }
+  .chips input:focus-visible + span { outline: 3px solid var(--marca); outline-offset: 2px; }
+  .miniaturas { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .miniaturas figure { position: relative; margin: 0; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--borde); }
+  .miniaturas img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .miniaturas button { position: absolute; top: 4px; right: 4px; width: 30px; height: 30px; border-radius: 50%; border: 0; background: rgba(0,0,0,.6); color: #fff; font-size: 16px; line-height: 1; }
+  .trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .ok { font-size: 64px; color: var(--ok); text-align: center; margin-top: 24px; }
+  #listo { text-align: center; }
+  details.instalar { margin-top: 24px; background: var(--superficie); border: 1px solid var(--borde); border-radius: 12px; padding: 10px 12px; }
+  details.instalar summary { font-weight: 600; cursor: pointer; }
+  .pie { margin-top: 24px; color: var(--suave); font-size: 14px; text-align: center; }
+  #procesando { position: fixed; inset: auto 16px 24px; max-width: 488px; margin: 0 auto; background: var(--texto); color: var(--fondo); text-align: center; padding: 14px; border-radius: 12px; font-weight: 600; }
+  #mapa { height: 340px; border-radius: 10px; margin-top: 8px; border: 1px solid var(--borde); }
+  #mapa-caja .fila button { margin-top: 10px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="barra">
+  <img src="icon.svg" alt="" width="34" height="34">
+  <div><strong>Fauna en la vía</strong><span>Nordeste Salvaje</span></div>
+</header>
+
+<main>
+  <section id="bienvenida" hidden>
+    <h1>Bienvenido</h1>
+    <p>Con esta página puede reportar animales muertos, heridos o vivos en la vía. Usted toma la foto y la página guarda sola la hora y el punto.</p>
+    <label>Su nombre
+      <input id="nombre" autocomplete="name" required>
+    </label>
+    <label>Teléfono (opcional)
+      <input id="telefono" type="tel" autocomplete="tel" inputmode="tel">
+    </label>
+    <p class="ayuda">Solo lo usamos para saber quién reportó y, si hace falta, preguntarle algo. Se pide una sola vez.</p>
+    <button id="btn-permiso" class="secundario" type="button">📍 Permitir la ubicación</button>
+    <p id="estado-permiso" class="ayuda"></p>
+    <p id="error-bienvenida" class="error" hidden></p>
+    <button id="btn-guardar-datos" class="principal" type="button">Empezar</button>
+  </section>
+
+  <section id="principal" hidden>
+    <div id="pendientes" class="aviso" hidden>
+      <span id="txt-pendientes"></span>
+      <button id="btn-reintentar" class="enlace" type="button">Enviar ahora</button>
+    </div>
+    <button id="btn-camara" class="grande" type="button"><span class="icono">📷</span>Tomar foto</button>
+    <button id="btn-galeria" class="secundario" type="button">🖼️ Subir una foto de la galería</button>
+    <p id="gps-principal" class="ayuda"></p>
+    <details class="instalar">
+      <summary>Dejarla como app en el celular</summary>
+      <p><b>Android:</b> menú ⋮ del navegador → <i>Agregar a la pantalla principal</i>.</p>
+      <p><b>iPhone:</b> botón de compartir → <i>Agregar a inicio</i>.</p>
+      <p>Queda con su ícono y abre sin internet. Los reportes hechos sin señal se envían cuando vuelva a abrirla con señal.</p>
+    </details>
+    <button id="btn-ir-prueba" class="secundario" type="button" hidden>🔬 Probar los metadatos de una foto</button>
+    <p class="pie">Reportando como <b id="quien"></b> · <button id="btn-cambiar" class="enlace" type="button">cambiar</button></p>
+  </section>
+
+  <section id="revision" hidden>
+    <h2>Revise y envíe</h2>
+    <div id="miniaturas" class="miniaturas"></div>
+    <button id="btn-otra" class="enlace" type="button">+ Agregar otra foto</button>
+
+    <fieldset>
+      <legend>¿Cómo estaba el animal?</legend>
+      <div class="chips">
+        <label><input type="radio" name="estado" value="Muerto"><span>Muerto</span></label>
+        <label><input type="radio" name="estado" value="Herido"><span>Herido</span></label>
+        <label><input type="radio" name="estado" value="Vivo"><span>Vivo</span></label>
+      </div>
+    </fieldset>
+
+    <div class="dato">
+      <h3>Ubicación</h3>
+      <p id="txt-ubicacion"></p>
+      <p id="fuente-ubicacion" class="fuente"></p>
+      <button id="btn-usar-gps" class="secundario" type="button" hidden>📍 Estoy en el sitio: usar mi ubicación</button>
+      <button id="btn-mapa" class="secundario" type="button">🗺️ Marcar el punto en el mapa</button>
+      <div id="mapa-caja" hidden>
+        <p class="ayuda">Toque el mapa donde estaba el animal. Puede acercar con dos dedos.</p>
+        <div id="mapa"></div>
+        <div class="fila">
+          <button id="btn-mapa-ok" class="principal" type="button" disabled>Usar este punto</button>
+          <button id="btn-mapa-cancelar" class="secundario" type="button">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dato">
+      <h3>Fecha y hora</h3>
+      <div class="fila">
+        <input type="date" id="fecha" aria-label="Fecha">
+        <input type="time" id="hora" aria-label="Hora">
+      </div>
+      <p id="fuente-hora" class="fuente"></p>
+    </div>
+
+    <label>¿Qué animal es? (si lo sabe)
+      <input id="animal" placeholder="Ej.: zarigüeya, serpiente, ave…">
+    </label>
+    <label>Referencia del sitio
+      <input id="referencia" placeholder="Ej.: curva del puente, frente a la finca…">
+    </label>
+    <label>Nota
+      <textarea id="nota" rows="2"></textarea>
+    </label>
+    <label class="trampa" aria-hidden="true">Sitio web
+      <input id="web" tabindex="-1" autocomplete="off">
+    </label>
+
+    <p id="error" class="error" hidden></p>
+    <button id="btn-enviar" class="principal" type="button">Enviar reporte</button>
+    <button id="btn-cancelar" class="enlace" type="button">Cancelar</button>
+  </section>
+
+  <section id="prueba" hidden>
+    <h2>Prueba de metadatos</h2>
+    <p class="ayuda">Escoja una foto tomada con la cámara del celular. No se envía nada: solo se muestra lo que le llegó a la página.</p>
+    <button id="btn-prueba-galeria" class="secundario" type="button">🖼️ Desde la galería (selector de fotos)</button>
+    <button id="btn-prueba-archivos" class="secundario" type="button">📁 Desde Archivos (explorador)</button>
+    <div id="resultado-prueba"></div>
+    <button id="btn-salir-prueba" class="enlace" type="button">Volver</button>
+  </section>
+
+  <section id="listo" hidden>
+    <div class="ok">✓</div>
+    <h2 id="titulo-listo">Reporte guardado</h2>
+    <p id="txt-listo"></p>
+    <div id="caja-whatsapp" class="dato" hidden>
+      <h3>Falta la ubicación</h3>
+      <p>El celular no dejó pasar la ubicación de la foto. Mándenos la foto original por WhatsApp y de ahí la sacamos:</p>
+      <ol>
+        <li>Toque el botón verde: se abre WhatsApp con un mensaje listo (código <b id="codigo-reporte"></b>).</li>
+        <li>Antes de enviar, toque 📎 → <b>Documento</b> y escoja la misma foto. Como documento llega completa.</li>
+      </ol>
+      <a id="btn-whatsapp" class="principal" href="#" target="_blank" rel="noopener">Mandar el original por WhatsApp</a>
+    </div>
+    <button id="btn-nuevo" class="principal" type="button">Hacer otro reporte</button>
+  </section>
+</main>
+
+<div id="procesando" hidden>Procesando la foto…</div>
+<input type="file" id="in-camara" accept="image/*" capture="environment" hidden>
+<input type="file" id="in-galeria" accept="image/*" multiple hidden>
+<input type="file" id="in-prueba-galeria" accept="image/*" hidden>
+<input type="file" id="in-prueba-archivos" hidden>
+<script src="app.js"></script>
+</body>
+</html>

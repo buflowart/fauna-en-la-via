@@ -15,7 +15,7 @@ depende: 003, 005
 
 **Pasos.**
 1. Crear los proyectos en los proveedores elegidos (lo hace una persona, no un agente) y dejar las claves en secretos.
-2. Antes de tocar la foto, leer de sus metadatos EXIF la fecha y las coordenadas y ofrecerlas como valores iniciales si la persona no usa el GPS. Sirve para fotos tomadas antes.
+2. Antes de tocar la foto, leer de sus metadatos EXIF la fecha y las coordenadas y ofrecerlas como valores iniciales si la persona no usa el GPS. Sirve para fotos tomadas antes. **Ojo (2026-11-16):** en Android solo llegan la fecha y la hora; el sistema borra las coordenadas. Ver `docs/PROTOTIPO_REPORTAR.md` y la decisión 25.
 3. En el celular: reducir la foto (lado largo de 1.600 px, unos 300 KB) y volver a codificarla, para que salga **sin metadatos EXIF**.
 4. Subir la foto al almacenamiento con una URL firmada de corta duración; guardar el registro con estado "recibido".
 5. Campos: foto, ubicación (GPS o toque en el mapa), fecha y hora, especie si la sabe, comentario, aceptación de la licencia. Quitar "Tramo (unidad funcional)": a nivel nacional no aplica, y se calcula.

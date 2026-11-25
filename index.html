@@ -125,6 +125,7 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 900; letter-spacing: -0.01e
 .photo { aspect-ratio: 4 / 3; width: 100%; max-width: 100%; border-radius: 8px; overflow: hidden; display: grid; place-items: center; background: repeating-linear-gradient(135deg, var(--bg), var(--bg) 10px, var(--line) 10px, var(--line) 11px); color: var(--muted); font-family: var(--font-mono); font-size: 12px; text-align: center; padding: 10px; }
 .photo img { width: 100%; height: 100%; object-fit: cover; display: block; margin: -10px; max-width: none; }
 .photo a { color: var(--ink); font-weight: 600; }
+.aviso { margin: 0 0 12px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); font-size: 13px; }
 .photo img { cursor: zoom-in; }
 .fz { position: fixed; inset: 0; z-index: 2000; background: rgba(8,14,11,.94); display: flex; flex-direction: column; touch-action: none; }
 .fz[hidden] { display: none; }
@@ -184,6 +185,8 @@ label.f small { font-weight: 400; color: var(--muted); }
     </div>
   </header>
 
+  <p class="aviso" id="aviso" role="note">Esta página muestra fotos de animales atropellados que pueden ser impactantes.</p>
+
   <div class="demo" id="banner"><b>Cargando la hoja de Google…</b></div>
 
   <main id="v-mapa" class="grid">
@@ -224,7 +227,7 @@ label.f small { font-weight: 400; color: var(--muted); }
         <form class="rep" id="form" novalidate>
           <div class="drop">
             <label class="f" for="foto">1. Foto del animal
-              <small>En el celular abre la cámara directamente.</small>
+              <small>En el celular abre la cámara directamente. La foto se publicará en un mapa abierto y puede mostrar un animal muerto.</small>
               <input class="inp" type="file" id="foto" accept="image/*" capture="environment">
             </label>
             <div class="photo" id="prev">Sin foto todavía</div>

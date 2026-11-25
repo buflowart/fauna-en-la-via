@@ -125,6 +125,11 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 900; letter-spacing: -0.01e
 .photo { aspect-ratio: 4 / 3; width: 100%; max-width: 100%; border-radius: 8px; overflow: hidden; display: grid; place-items: center; background: repeating-linear-gradient(135deg, var(--bg), var(--bg) 10px, var(--line) 10px, var(--line) 11px); color: var(--muted); font-family: var(--font-mono); font-size: 12px; text-align: center; padding: 10px; }
 .photo img { width: 100%; height: 100%; object-fit: cover; display: block; margin: -10px; max-width: none; }
 .photo a { color: var(--ink); font-weight: 600; }
+.photo { position: relative; }
+.photo.sens img { filter: blur(24px); transform: scale(1.1); }
+.sens-btn { position: absolute; inset: 0; width: 100%; border: 0; background: rgba(20,36,27,.35); color: #fff; font: inherit; font-size: 13px; font-weight: 600; line-height: 1.4; cursor: pointer; padding: 10px; }
+.sens-btn small { display: block; font-weight: 400; opacity: .9; }
+.aviso { margin: 0 0 12px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); font-size: 13px; }
 .dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 10px 0 0; font-size: 14px; }
 .dl dt { color: var(--muted); }
 .dl dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
@@ -175,6 +180,8 @@ label.f small { font-weight: 400; color: var(--muted); }
     </div>
   </header>
 
+  <p class="aviso" id="aviso" role="note">Los registros incluyen fotos de animales atropellados que pueden ser impactantes. Las fotos aparecen difuminadas hasta que las toques.</p>
+
   <div class="demo" id="banner"><b>Cargando la hoja de Google…</b></div>
 
   <main id="v-mapa" class="grid">
@@ -215,7 +222,7 @@ label.f small { font-weight: 400; color: var(--muted); }
         <form class="rep" id="form" novalidate>
           <div class="drop">
             <label class="f" for="foto">1. Foto del animal
-              <small>En el celular abre la cámara directamente.</small>
+              <small>En el celular abre la cámara directamente. La foto se publicará en un mapa abierto y puede mostrar un animal muerto.</small>
               <input class="inp" type="file" id="foto" accept="image/*" capture="environment">
             </label>
             <div class="photo" id="prev">Sin foto todavía</div>
@@ -315,9 +322,12 @@ label.f small { font-weight: 400; color: var(--muted); }
   function fmtDate(ms, hour) { return ms == null ? "Sin fecha" : new Date(ms).toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" }) + (hour ? ", " + hour : ""); }
   function coordsTxt(r) { return r.lat == null ? "Sin coordenadas" : r.lat.toFixed(5) + ", " + r.lon.toFixed(5); }
   function thumb(r) { return "https://drive.google.com/thumbnail?id=" + r.photoId + "&sz=w600"; }
+  /* fotos sensibles: difuminadas hasta que la persona las toca; una vez por visita */
+  var verFotos = false; try { verFotos = sessionStorage.getItem("verFotos") === "1"; } catch (e) {}
+  function sensHtml() { return verFotos ? "" : '<button type="button" class="sens-btn" aria-label="Mostrar la foto, puede mostrar un animal muerto">Foto de un animal atropellado<small>Toca para verla</small></button>'; }
   function photoHtml(r) {
-    if (r.photo) return '<div class="photo"><img alt="Foto del reporte" src="' + r.photo + '"></div>';
-    if (r.photoId) return '<div class="photo"><img alt="Foto del registro" src="' + thumb(r) + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.hidden=false"><span hidden>La foto no se puede mostrar aquí.<br><a href="' + esc(r.photoLink) + '" target="_blank" rel="noopener">Abrir en Drive</a></span></div>';
+    if (r.photo) return '<div class="photo' + (verFotos ? "" : " sens") + '"><img alt="Foto del reporte" src="' + r.photo + '">' + sensHtml() + "</div>";
+    if (r.photoId) return '<div class="photo' + (verFotos ? "" : " sens") + '"><img alt="Foto del registro" src="' + thumb(r) + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.hidden=false"><span hidden>La foto no se puede mostrar aquí.<br><a href="' + esc(r.photoLink) + '" target="_blank" rel="noopener">Abrir en Drive</a></span>' + sensHtml() + "</div>";
     return '<div class="photo">Sin foto</div>';
   }
   function title(r) { return esc(r.species) + (r.common && r.common.toLowerCase() !== r.species.toLowerCase() ? " <em>" + esc(r.common) + "</em>" : ""); }
@@ -556,6 +566,13 @@ label.f small { font-weight: 400; color: var(--muted); }
     $("coordTxt").textContent = "Usa el GPS del celular o toca el mapa donde estaba el animal.";
     drawAll(); toast("Reporte enviado. Queda sin validar.");
   });
+
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest(".sens-btn")) return;
+    e.preventDefault(); e.stopPropagation(); verFotos = true; try { sessionStorage.setItem("verFotos", "1"); } catch (x) {}
+    document.querySelectorAll(".photo.sens").forEach(function (p) { p.classList.remove("sens"); });
+    document.querySelectorAll(".sens-btn").forEach(function (b) { b.remove(); });
+  }, true);
 
   /* eventos */
   function show(v) {

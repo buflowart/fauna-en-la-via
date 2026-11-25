@@ -35,3 +35,5 @@ depende: ninguna
 - En la pestaña de red del navegador no aparece el ID de la hoja maestra.
 
 **Ojo.** El ID de la hoja maestra queda en el historial de git. No es un secreto si la hoja ya no es pública, pero no se vuelve a abrir por enlace.
+
+**Avance 2026-11-25.** Verificado con `curl` sin credenciales: la maestra sigue pública con `Reportante` y `Notas`. El script de copia está en `publica/copiar_publica.gs` (instrucciones al inicio). Falta: que Rubén lo instale en una hoja nueva, la tabla concesión → generación (con fuente) y cambiar `SHEET` en `index.html`.

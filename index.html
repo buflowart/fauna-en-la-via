@@ -74,6 +74,7 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 900; letter-spacing: -0.01e
 .chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 99px; cursor: pointer; border: 1.5px solid var(--line); background: var(--bg); font-size: 13px; font-weight: 500; }
 .chip i { width: 10px; height: 10px; border-radius: 50%; display: block; }
 .chip[aria-pressed="false"] { opacity: .45; }
+.amen-key { color: var(--muted); font-size: 12px; }
 .chip small { font-family: var(--font-mono); color: var(--muted); font-size: 12px; }
 .switch { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; margin-top: 8px; }
 .status-line { font-size: 12px; color: var(--muted); margin-top: 6px; }
@@ -182,6 +183,7 @@ label.f small { font-weight: 400; color: var(--muted); }
       <div class="chips" id="chips"></div>
       <div id="map" class="lmap"></div>
       <label class="switch"><input type="checkbox" id="showPend"> Mostrar también registros sin validar</label>
+      <label class="switch"><input type="checkbox" id="soloAmen"> Solo especies amenazadas <span class="amen-key">(anillo rojo: CR, EN o VU; anillo gris: casi amenazada)</span></label>
       <div class="views" role="group" aria-label="Vista del mapa">
         <span class="vlabel">Vista</span>
         <button type="button" class="seg" data-view="registros" aria-pressed="false">Solo registros</button>
@@ -322,7 +324,7 @@ label.f small { font-weight: 400; color: var(--muted); }
   }
   function title(r) { return esc(r.species) + (r.common && r.common.toLowerCase() !== r.species.toLowerCase() ? " <em>" + esc(r.common) + "</em>" : ""); }
 
-  var st = { groups: { mam: true, rep: true, ave: true, anf: true, dom: true, inv: true, nd: true }, pend: false, hl: null, sel: null, pick: null };
+  var st = { groups: { mam: true, rep: true, ave: true, anf: true, dom: true, inv: true, nd: true }, pend: false, amen: false, hl: null, sel: null, pick: null };
 
   /* mapas */
   function layers() {
@@ -435,10 +437,27 @@ label.f small { font-weight: 400; color: var(--muted); }
   var pmap = L.map("pickmap").setView([6.8, -74.8], 10), pl = layers(), pickMarker = null;
   pl.osm.addTo(pmap); L.control.layers({ "Calles": pl.osm, "Satélite": pl.sat }, null, { position: "topright" }).addTo(pmap);
 
-  function visible() { return recs.filter(function (r) { return r.lat != null && st.groups[r.group] && (r.status === "validado" || st.pend); }); }
+  /* categorías de amenaza: datos/referencia/especies.csv (UICN y Resolución 0126 de 2024) */
+  var AMEN = {};
+  var AMEN_COD = { CR: "En peligro crítico", EN: "En peligro", VU: "Vulnerable", NT: "Casi amenazada" };
+  function amenInfo(r) {
+    var a = AMEN[r.species]; if (!a) return null;
+    var nac = AMEN_COD[a.nac] ? a.nac : "", uic = AMEN_COD[a.uicn] ? a.uicn : "";
+    if (!nac && !uic) return null;
+    var thr = /^(CR|EN|VU)$/;
+    return { amenazada: thr.test(nac) || thr.test(uic), nac: nac, uicn: uic };
+  }
+  function amenTxt(r) {
+    var i = amenInfo(r); if (!i) return "";
+    var p = [];
+    if (i.nac) p.push(AMEN_COD[i.nac] + " (" + i.nac + ") en Colombia");
+    if (i.uicn) p.push(AMEN_COD[i.uicn] + " (" + i.uicn + ") según la UICN");
+    return '<br><b style="color:' + (i.amenazada ? "#B3261E" : "var(--muted)") + '">' + (i.amenazada ? "Especie amenazada: " : "") + esc(p.join(" · ")) + "</b>";
+  }
+  function visible() { return recs.filter(function (r) { return r.lat != null && st.groups[r.group] && (r.status === "validado" || st.pend) && (!st.amen || (amenInfo(r) || {}).amenazada); }); }
   function popupHtml(r) {
     return '<div class="pop">' + photoHtml(r) + '<div class="pt-t"><span class="tag" style="background:var(' + GROUPS[r.group][1] + ')">' + GROUPS[r.group][0] + "</span> " + title(r) + "</div>" +
-      '<div class="pt-m">' + esc(r.id) + " · " + esc(r.road) + (r.km ? ", PR " + esc(r.km) : "") + "<br>" + fmtDate(r.date, r.hour) + " · " + (r.status === "validado" ? "Validado" : "Sin validar") +
+      '<div class="pt-m">' + esc(r.id) + " · " + esc(r.road) + (r.km ? ", PR " + esc(r.km) : "") + "<br>" + fmtDate(r.date, r.hour) + " · " + (r.status === "validado" ? "Validado" : "Sin validar") + amenTxt(r) +
       '<br><span class="mono">' + coordsTxt(r) + "</span></div></div>";
   }
   function markStyle(r) {
@@ -448,6 +467,8 @@ label.f small { font-weight: 400; color: var(--muted); }
   function drawPoints() {
     ptLayer.clearLayers(); markers = {};
     visible().forEach(function (r) {
+      var ai = amenInfo(r);
+      if (ai) L.circleMarker([r.lat, r.lon], { radius: 14, color: ai.amenazada ? "#B3261E" : "#8A8F98", weight: ai.amenazada ? 3 : 2, fill: false, interactive: false }).addTo(ptLayer);
       var m = L.circleMarker([r.lat, r.lon], markStyle(r)).addTo(ptLayer);
       m.bindPopup(function () { return popupHtml(r); }, { maxWidth: 260, minWidth: 230 });
       m.on("click", function () {
@@ -565,6 +586,7 @@ label.f small { font-weight: 400; color: var(--muted); }
   }
   document.querySelectorAll(".tab").forEach(function (t) { t.addEventListener("click", function () { show(t.dataset.v); }); });
   $("chips").addEventListener("click", function (e) { var b = e.target.closest(".chip"); if (!b) return; st.groups[b.dataset.g] = !st.groups[b.dataset.g]; drawChips(); drawPoints(); });
+  $("soloAmen").addEventListener("change", function (e) { st.amen = e.target.checked; drawPoints(); });
   $("showPend").addEventListener("change", function (e) { st.pend = e.target.checked; drawPoints(); });
   $("hot").addEventListener("click", function (e) {
     var b = e.target.closest(".row"); if (!b) return;
@@ -602,6 +624,12 @@ label.f small { font-weight: 400; color: var(--muted); }
     $("banner").innerHTML = "<b>Datos reales de la hoja de Google.</b> " + recs.length + " registros leídos" + (noCoord ? ", " + noCoord + " sin coordenadas (no se dibujan)" : "") +
       ". Se actualizan cada vez que abres la página. Los reportes nuevos todavía no se escriben en la hoja.";
     fill(); drawAll(); fitAll();
+    fetch("datos/referencia/especies.csv").then(function (r) { if (!r.ok) throw 0; return r.text(); }).then(function (t) {
+      var rows = parseCSV(t), H = rows[0].map(function (x) { return x.trim(); });
+      var ci = H.indexOf("nombre_cientifico"), cn = H.indexOf("categoria_nacional"), cu = H.indexOf("categoria_uicn");
+      rows.slice(1).forEach(function (r) { if (r[ci]) AMEN[r[ci].trim()] = { nac: (r[cn] || "").trim(), uicn: (r[cu] || "").trim() }; });
+      drawPoints();
+    }).catch(function () {});
   }).catch(function () {
     $("banner").innerHTML = "<b>No se pudo leer la hoja.</b> Revisa que esté compartida como \"cualquier persona con el link puede ver\" y recarga.";
   });

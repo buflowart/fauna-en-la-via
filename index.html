@@ -125,6 +125,15 @@ h1 { font-size: clamp(30px, 6vw, 46px); font-weight: 900; letter-spacing: -0.01e
 .photo { aspect-ratio: 4 / 3; width: 100%; max-width: 100%; border-radius: 8px; overflow: hidden; display: grid; place-items: center; background: repeating-linear-gradient(135deg, var(--bg), var(--bg) 10px, var(--line) 10px, var(--line) 11px); color: var(--muted); font-family: var(--font-mono); font-size: 12px; text-align: center; padding: 10px; }
 .photo img { width: 100%; height: 100%; object-fit: cover; display: block; margin: -10px; max-width: none; }
 .photo a { color: var(--ink); font-weight: 600; }
+.photo img { cursor: zoom-in; }
+.fz { position: fixed; inset: 0; z-index: 2000; background: rgba(8,14,11,.94); display: flex; flex-direction: column; touch-action: none; }
+.fz[hidden] { display: none; }
+.fz-stage { flex: 1; overflow: hidden; display: grid; place-items: center; cursor: grab; }
+.fz-stage.mov { cursor: grabbing; }
+.fz-stage img { max-width: 100%; max-height: 100%; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; will-change: transform; }
+.fz-bar { display: flex; gap: 8px; justify-content: center; align-items: center; padding: 10px; }
+.fz-bar button { min-width: 44px; height: 44px; border-radius: 99px; border: 1.5px solid #ffffff55; background: #ffffff18; color: #fff; font-size: 20px; cursor: pointer; }
+.fz-bar span { color: #ffffffb0; font-size: 12px; min-width: 52px; text-align: center; font-family: var(--font-mono); }
 .dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 10px 0 0; font-size: 14px; }
 .dl dt { color: var(--muted); }
 .dl dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
@@ -556,6 +565,43 @@ label.f small { font-weight: 400; color: var(--muted); }
     $("coordTxt").textContent = "Usa el GPS del celular o toca el mapa donde estaba el animal.";
     drawAll(); toast("Reporte enviado. Queda sin validar.");
   });
+
+  /* foto ampliada: zoom con rueda, pellizco o botones; arrastrar para mover; doble toque alterna */
+  (function () {
+    var lb = document.createElement("div"); lb.className = "fz"; lb.hidden = true; lb.setAttribute("role", "dialog"); lb.setAttribute("aria-label", "Foto ampliada");
+    lb.innerHTML = '<div class="fz-stage"><img alt="Foto ampliada"></div><div class="fz-bar"><button type="button" data-a="out" aria-label="Alejar">−</button><span>100 %</span><button type="button" data-a="in" aria-label="Acercar">+</button><button type="button" data-a="reset" aria-label="Ajustar">⤢</button><button type="button" data-a="close" aria-label="Cerrar">✕</button></div>';
+    document.body.appendChild(lb);
+    var stage = lb.querySelector(".fz-stage"), img = stage.querySelector("img"), lab = lb.querySelector("span");
+    var z = 1, tx = 0, ty = 0, ptrs = {}, d0 = 0, z0 = 1, MAXZ = 8;
+    function apply() { img.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + z + ")"; lab.textContent = Math.round(z * 100) + " %"; }
+    function limit() { var w = img.clientWidth * z, h = img.clientHeight * z, sw = stage.clientWidth, sh = stage.clientHeight, ox = (sw - img.clientWidth) / 2, oy = (sh - img.clientHeight) / 2;
+      tx = w <= sw ? (sw - w) / 2 - ox : Math.min(-ox, Math.max(sw - w - ox, tx)); ty = h <= sh ? (sh - h) / 2 - oy : Math.min(-oy, Math.max(sh - h - oy, ty)); }
+    function zoomAt(nz, cx, cy) { nz = Math.min(MAXZ, Math.max(1, nz)); var r = img.getBoundingClientRect(), f = nz / z;
+      tx += (cx - r.left) * (1 - f); ty += (cy - r.top) * (1 - f); z = nz; limit(); apply(); }
+    function center() { var r = stage.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
+    function reset() { z = 1; tx = 0; ty = 0; apply(); }
+    function open(src) { img.src = src; lb.hidden = false; document.body.style.overflow = "hidden"; reset(); }
+    function close() { lb.hidden = true; img.removeAttribute("src"); document.body.style.overflow = ""; }
+    document.addEventListener("click", function (e) {
+      var im = e.target.closest && e.target.closest(".photo img"); if (!im || lb.contains(im)) return;
+      e.preventDefault(); open((im.currentSrc || im.src).replace(/sz=w\d+/, "sz=w2000"));
+    });
+    lb.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { var c = center(), a = b.dataset.a;
+      if (a === "close") close(); else if (a === "reset") reset(); else zoomAt(z * (a === "in" ? 1.5 : 1 / 1.5), c[0], c[1]); }
+      else if (e.target === stage) close(); });
+    stage.addEventListener("wheel", function (e) { e.preventDefault(); zoomAt(z * (e.deltaY < 0 ? 1.2 : 1 / 1.2), e.clientX, e.clientY); }, { passive: false });
+    stage.addEventListener("dblclick", function (e) { if (z > 1) reset(); else zoomAt(2.5, e.clientX, e.clientY); });
+    stage.addEventListener("pointerdown", function (e) { stage.setPointerCapture(e.pointerId); ptrs[e.pointerId] = [e.clientX, e.clientY]; stage.classList.add("mov");
+      var k = Object.keys(ptrs); if (k.length === 2) { d0 = Math.hypot(ptrs[k[0]][0] - ptrs[k[1]][0], ptrs[k[0]][1] - ptrs[k[1]][1]); z0 = z; } });
+    stage.addEventListener("pointermove", function (e) { if (!ptrs[e.pointerId]) return; var k = Object.keys(ptrs);
+      if (k.length === 2) { ptrs[e.pointerId] = [e.clientX, e.clientY]; var d = Math.hypot(ptrs[k[0]][0] - ptrs[k[1]][0], ptrs[k[0]][1] - ptrs[k[1]][1]);
+        if (d0) zoomAt(z0 * d / d0, (ptrs[k[0]][0] + ptrs[k[1]][0]) / 2, (ptrs[k[0]][1] + ptrs[k[1]][1]) / 2); }
+      else { tx += e.clientX - ptrs[e.pointerId][0]; ty += e.clientY - ptrs[e.pointerId][1]; ptrs[e.pointerId] = [e.clientX, e.clientY]; limit(); apply(); } });
+    function up(e) { delete ptrs[e.pointerId]; if (!Object.keys(ptrs).length) stage.classList.remove("mov"); }
+    stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
+    document.addEventListener("keydown", function (e) { if (lb.hidden) return; var c = center();
+      if (e.key === "Escape") close(); else if (e.key === "+" || e.key === "=") zoomAt(z * 1.5, c[0], c[1]); else if (e.key === "-") zoomAt(z / 1.5, c[0], c[1]); else if (e.key === "0") reset(); });
+  })();
 
   /* eventos */
   function show(v) {

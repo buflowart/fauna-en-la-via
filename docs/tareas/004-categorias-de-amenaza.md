@@ -30,3 +30,5 @@ depende: ninguna
 - El mapa muestra el distintivo y el filtro funciona.
 
 **Ojo.** Casi amenazada (NT) no es amenazada: se muestra, pero con otro distintivo.
+
+**Avance 2026-11-25.** Hecho `especies.csv` (UICN vía GBIF, nacional por cruce), el script `analisis/especies_categorias.py`, el anillo en el mapa (rojo CR/EN/VU, gris NT) y el filtro "Solo especies amenazadas". Falta: PDF de la resolución, revisar a mano 5 especies contra la UICN y confirmar los dos sinónimos propuestos (ver `datos/referencia/LEEME.md`).
